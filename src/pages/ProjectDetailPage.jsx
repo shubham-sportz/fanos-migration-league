@@ -24,7 +24,7 @@ function TaskChecklist({ taskProgress, taskList }) {
     return (
       <section className="section" style={{ marginTop: 16 }}>
         <div className="section-head"><div className="section-head-title">Task Checklist</div></div>
-        <div className="na" style={{ padding: 22 }}>NA — add this project's tasks (with a pending/inprogress/done status) to src/data/tasks.json to drive completion %</div>
+        <div className="na" style={{ padding: 22 }}>NA — add this project's tasks (with a pending/inprogress/done status) to the Tasks sheet in FML-Data.xlsx to drive completion %</div>
       </section>
     );
   }
@@ -113,7 +113,7 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
           })}
         </div>
       </div>
-      {!hasAnyActual && <div className="na" style={{ marginTop: 14 }}>NA — no category has logged hours yet; add them to actualEffortSplit in project-data.json</div>}
+      {!hasAnyActual && <div className="na" style={{ marginTop: 14 }}>NA — no category has logged hours yet; add them to the Actual_* columns in the Projects sheet of FML-Data.xlsx</div>}
     </div>
   );
 }

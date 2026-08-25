@@ -1,3 +1,6 @@
 node_modules
 dist
 .DS_Store
+
+# generated from FML-Data.xlsx by scripts/generate-data.mjs
+src/data/generated.json

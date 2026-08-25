@@ -7,7 +7,7 @@ export const TODAY = new Date('2026-08-24T00:00:00');
 // generic template, not project-specific real data — used only once a
 // project's real progress % is known (i.e. target hours supplied), and
 // labelled "(template)" everywhere it appears so it never reads as measured
-// per-phase completion. Swap in real per-phase targets in project-data.json
+// per-phase completion. Swap in real per-phase targets in FML-Data.xlsx (Projects sheet)
 // to replace it with real numbers.
 export const PHASE_TEMPLATE = [
   ['Design', 0.2667],
@@ -52,7 +52,7 @@ export function computeMilestones(progressPct) {
 
 /**
  * Real per-phase milestone completion, computed from the master task list
- * (src/data/tasks.json) instead of the generic PHASE_TEMPLATE weighting.
+ * (FML-Data.xlsx's Tasks sheet) instead of the generic PHASE_TEMPLATE weighting.
  * Each task is bucketed into a phase via the same best-effort title match
  * used for the task Gantt, then a phase's % is done-tasks ÷ total-tasks in
  * that phase — genuinely measured, not a template estimate, though the
@@ -160,7 +160,7 @@ export function deriveProject(project) {
   const actualDurationDays = hasActualEnd && hasStart ? Math.max(1, dayDiff(project.startDate, project.actualEndDate) + 1) : NA;
 
   // Run rate is scoped to TASKS completed, not hours — pace is "tasks/day"
-  // once a project has a real task checklist (src/data/tasks.json). Falls
+  // once a project has a real task checklist (FML-Data.xlsx's Tasks sheet). Falls
   // back to hours/day (dev+QA effort only — Build Dev + Run Dev + QA, since
   // Design/Run Config/Delivery aren't pace-relevant work) when no task list
   // exists yet for the project.
@@ -238,7 +238,7 @@ export function deriveProject(project) {
     else status = 'critical';
   }
 
-  // Manual override (project-data.json `statusOverride`) — use when the
+  // Manual override (FML-Data.xlsx (Projects sheet) `statusOverride`) — use when the
   // automatic task/schedule comparison above reads wrong for where a
   // project actually stands. Doesn't touch any of the underlying numbers
   // (progress %, RR, hours), only which status badge is shown.
@@ -292,12 +292,7 @@ export function cumulativeByDate(tasks) {
   tasks.forEach((t) => {
     byDate[t.date] = (byDate[t.date] || 0) + t.hours;
   });
-  const parseLabel = (label) => {
-    const m = /^(\d{1,2})-([A-Za-z]{3})$/.exec(label);
-    if (!m) return null;
-    const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
-    return new Date(2026, months[m[2].toLowerCase()], parseInt(m[1], 10));
-  };
+  const parseLabel = (label) => parseDateLabel(label);
   const points = Object.entries(byDate)
     .map(([label, hours]) => ({ date: parseLabel(label), label, hours }))
     .filter((p) => p.date)
@@ -357,17 +352,23 @@ export function buildProgressTrend(project) {
 
 const MONTHS = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
 function parseDateLabel(label) {
-  const m = /^(\d{1,2})-([A-Za-z]{3})$/.exec(label);
-  if (!m) return null;
-  return new Date(2026, MONTHS[m[2].toLowerCase()], parseInt(m[1], 10));
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(label);
+  if (iso) return new Date(parseInt(iso[1], 10), parseInt(iso[2], 10) - 1, parseInt(iso[3], 10));
+  const legacy = /^(\d{1,2})-([A-Za-z]{3})$/.exec(label);
+  if (legacy) return new Date(2026, MONTHS[legacy[2].toLowerCase()], parseInt(legacy[1], 10));
+  return null;
 }
 
-// A task's "completion date" isn't tracked directly (tasks.json only has a
-// status), so this uses the last date any timesheet entry mentioning that
-// task's ticket ID (or, failing that, its name) was logged as a real-data
-// proxy for when it was likely finished. Only tasks marked "done" that have
-// at least one matching, dated timesheet entry can be placed on the trend.
-function lastLoggedDateForTask(task, rawTasks) {
+// A task's real completed date, from the TaskTimeline sheet's ActualEnd —
+// falls back to the last date any timesheet entry mentioning that task's
+// ticket ID (or, failing that, its name) was logged, as a real-data proxy
+// for tasks that don't have an explicit ActualEnd yet. Only tasks marked
+// "done" that resolve to a real date this way can be placed on the trend.
+function taskCompletedDate(task, rawTasks) {
+  if (!isNA(task.actualEnd)) {
+    const d = parseDateLabel(task.actualEnd);
+    if (d) return d;
+  }
   const matches = task.id
     ? rawTasks.filter((rt) => rt.text.includes(`[${task.id}]`))
     : rawTasks.filter((rt) => rt.text.toLowerCase().includes(task.name.toLowerCase()));
@@ -379,8 +380,8 @@ function lastLoggedDateForTask(task, rawTasks) {
 /**
  * Builds the planned-vs-actual progress trend chart from TASK completion,
  * not hours: the actual line is cumulative (done tasks so far ÷ total
- * tasks) × 100, plotted at each done task's real logged-date proxy (see
- * lastLoggedDateForTask). Falls back to hasData: false when there's no task
+ * tasks) × 100, plotted at each done task's real completed date (see
+ * taskCompletedDate). Falls back to hasData: false when there's no task
  * checklist, or no "done" task can be matched to a real date, rather than
  * fabricating a curve.
  */
@@ -394,7 +395,7 @@ export function buildTaskProgressTrend(project) {
 
   const doneWithDates = taskList
     .filter((t) => t.status === 'done')
-    .map((t) => ({ task: t, date: lastLoggedDateForTask(t, project.tasks || []) }))
+    .map((t) => ({ task: t, date: taskCompletedDate(t, project.tasks || []) }))
     .filter((d) => d.date)
     .sort((a, b) => a.date - b.date);
 

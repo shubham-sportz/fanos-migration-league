@@ -1,19 +1,15 @@
-import csvRaw from '../../Migration Tracker - Combined.csv?raw';
-import { parseTimesheet } from '../lib/parseTimesheet.js';
-import projectData from './project-data.json';
-import taskData from './tasks.json';
+import generated from './generated.json';
 import { NA } from '../lib/theme.js';
 
-const timesheet = parseTimesheet(csvRaw);
+const { projects: projectData, tasks: taskData, timesheet, developers, capacityHoursPerDay } = generated;
 
-const PROJECT_CODES = Object.keys(projectData.projects).filter((k) => !k.startsWith('_'));
-const DEVELOPER_ENTRIES = Object.entries(projectData.developers).filter(([k]) => !k.startsWith('_'));
+const PROJECT_CODES = Object.keys(projectData);
+const DEVELOPER_ENTRIES = Object.entries(developers);
 
 export function loadProjects() {
   return PROJECT_CODES.map((code) => {
-    const meta = projectData.projects[code];
+    const meta = projectData[code];
     const logged = timesheet[code] || {
-      totalHours: 0,
       developers: {},
       squadSize: 0,
       minDate: null,
@@ -23,10 +19,12 @@ export function loadProjects() {
     };
     const rolesByName = Object.fromEntries(DEVELOPER_ENTRIES.map(([name, d]) => [name, d]));
 
-    // Manual overrides/additions from project-data.json — used when the CSV
-    // parse missed a name entirely, or logged 0h for a row with no hour
-    // figure in the source text (e.g. MCFC's "MCFC Fixses" entries).
-    const overrides = Object.entries(meta.actualHoursByDeveloper || {}).filter(([k]) => !k.startsWith('_'));
+    // Logged hours come ONLY from the workbook's HoursOverride sheet — the
+    // Timesheet sheet just tracks who worked on what and when, no hours.
+    // `logged.developers` below is a presence map (everyone the timesheet
+    // mentions, at 0h) so a developer still shows up in the squad even
+    // before their hours are added to HoursOverride.
+    const overrides = Object.entries(meta.actualHoursByDeveloper || {});
     const hoursByName = { ...logged.developers };
     let hasOverride = false;
     overrides.forEach(([name, hours]) => {
@@ -51,7 +49,7 @@ export function loadProjects() {
     // adds to the real completed-hours total; it isn't just a side-by-side
     // comparison against the planned effortSplit.
     const effortAdditions = Object.entries(meta.actualEffortSplit || {})
-      .filter(([k, v]) => !k.startsWith('_') && !isNaN(v))
+      .filter(([, v]) => !isNaN(v))
       .reduce((s, [, v]) => s + v, 0);
 
     const completedHours = developerHours + effortAdditions;
@@ -69,7 +67,6 @@ export function loadProjects() {
       effortSplit: meta.effortSplit,
       actualEffortSplit: meta.actualEffortSplit || {},
       wickets: meta.wickets || [],
-      nextOver: meta.nextOver || [],
       // real: timesheet parse, adjusted by any manual overrides above
       completedHours,
       hasManualHours: hasOverride,
@@ -79,12 +76,12 @@ export function loadProjects() {
       lastLoggedDate: logged.maxDate,
       taskCount: logged.taskCount,
       tasks: logged.tasks,
-      // Master task checklist (src/data/tasks.json) — the source of truth
-      // for completion %, distinct from `tasks` above (the raw timesheet log).
+      // Master task checklist (Tasks sheet in FML-Data.xlsx) — the source of
+      // truth for completion %, distinct from `tasks` above (the raw timesheet log).
       taskList: taskData[code] || [],
     };
   });
 }
 
 export const DEVELOPER_NAMES = DEVELOPER_ENTRIES.map(([name]) => name);
-export const CAPACITY_HOURS_PER_DAY = projectData.capacityHoursPerDay;
+export const CAPACITY_HOURS_PER_DAY = capacityHoursPerDay;

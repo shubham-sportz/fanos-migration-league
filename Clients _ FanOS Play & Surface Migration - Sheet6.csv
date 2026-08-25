@@ -1,6 +1,0 @@
-,,,,,,,,,Estimated Efforts (in Hours),,,,,
-No.,Client Name,Web/App/Both,Priority,Dependency,Start Date,End Date,FanOS Readiness,Total,Build Dev,Run Config,Run Dev,Design,QA,Delivery
-1,Washington Freedom (WF),Web,P1,"Design, Client CMS Access","Jul 27, 2026","Aug 21, 2026",Partially Ready,248,104,,48,32,40,24
-2,Seattle Orcas (SO),Web,P1,"Design, Client CMS Access","Jul 28, 2026","Sep 04, 2026",Partially Ready,398,52,50,152,80,40,24
-4,Prime Volleyball League (PVL),Web,P2,"Design, Data Feed","Aug 10, 2026","Sep 16, 2026",Partially Ready,254,10,50,106,40,32,16
-5,Mumbai City FC (MCFC),Web,P1,"Design, Client CMS Access","Aug 03, 2026","Oct 09, 2026",Partially Ready,482,182,50,106,40,64,40
