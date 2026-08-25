@@ -39,7 +39,7 @@ export default function ProjectsPage({ projects, onOpen }) {
           );
         })}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16 }}>
+      <div className="cards-grid">
         {visible.map((p) => (
           <ProjectCard key={p.code} project={p} onOpen={onOpen} />
         ))}

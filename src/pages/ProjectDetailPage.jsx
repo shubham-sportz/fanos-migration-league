@@ -40,11 +40,15 @@ function TaskChecklist({ taskProgress, taskList }) {
           </div>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 1, background: '#F0F1FA' }}>
+      <div className="checklist-grid">
         {sorted.map((t, i) => {
           const s = CHECKLIST_STATUS_STYLE[t.status] || CHECKLIST_STATUS_STYLE.pending;
           return (
-            <div key={t.id || `${t.name}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 22px', background: '#FFFFFF' }}>
+            <div
+              key={t.id || `${t.name}-${i}`}
+              title={t.id ? `${t.name} ${t.id}` : t.name}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 22px', background: '#FFFFFF' }}
+            >
               <span className="badge" style={{ background: s.bg, color: s.fg, flex: '0 0 auto' }}>
                 <span className="badge-dot" style={{ background: s.fg }} />
                 {s.label}
@@ -78,13 +82,13 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
     <div className="card" style={{ padding: '20px 22px' }}>
       <div style={{ fontSize: 13.5, fontWeight: 800 }}>Effort Breakdown</div>
       <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 500, marginTop: 3 }}>
-        {hasSplit ? 'Planned hours (ring) · logged hours where tracked' : 'NA — needs effort-category hours per project'}
+        {hasSplit ? 'Planned runs (ring) · logged runs where tracked' : 'NA — needs effort-category runs per project'}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 18 }}>
         <div style={{ position: 'relative', width: 124, height: 124, flex: '0 0 124px', borderRadius: '50%', background: gradient }}>
           <div style={{ position: 'absolute', inset: 19, background: '#FFFFFF', borderRadius: '50%', display: 'grid', placeContent: 'center', textAlign: 'center' }}>
             <div className="num" style={{ fontSize: 28, fontWeight: 700, lineHeight: 1 }}>{isNA(target) ? 'NA' : target}</div>
-            <div style={{ fontSize: 9, letterSpacing: 1, color: '#6B7280', fontWeight: 700 }}>PLANNED HRS</div>
+            <div style={{ fontSize: 9, letterSpacing: 1, color: '#6B7280', fontWeight: 700 }}>PLANNED RUNS</div>
           </div>
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 9 }}>
@@ -97,13 +101,13 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
                 <span style={{ width: 8, height: 8, borderRadius: 3, background: hasSplit ? color : '#E8E8F2' }} />
                 <span style={{ flex: 1, fontSize: 12, fontWeight: 600 }}>{label}</span>
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#6B7280' }}>
-                  {hasSplit ? `${effortSplit[k]}h planned` : 'NA'}
+                  {hasSplit ? `${effortSplit[k]}r planned` : 'NA'}
                   {hasActual && (
                     <>
                       {' · '}
-                      <span style={{ color: '#1E1E2D' }}>{actual}h logged</span>
+                      <span style={{ color: '#1E1E2D' }}>{actual}r logged</span>
                       {variance !== null && (
-                        <span style={{ color: variance > 0 ? '#B45309' : '#15803D' }}> ({variance > 0 ? '+' : ''}{variance}h)</span>
+                        <span style={{ color: variance > 0 ? '#B45309' : '#15803D' }}> ({variance > 0 ? '+' : ''}{variance}r)</span>
                       )}
                     </>
                   )}
@@ -113,7 +117,7 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
           })}
         </div>
       </div>
-      {!hasAnyActual && <div className="na" style={{ marginTop: 14 }}>NA — no category has logged hours yet; add them to the Actual_* columns in the Projects sheet of FML-Data.xlsx</div>}
+      {!hasAnyActual && <div className="na" style={{ marginTop: 14 }}>NA — no category has logged runs yet; add them to the Actual_* columns in the Projects sheet of FML-Data.xlsx</div>}
     </div>
   );
 }
@@ -122,9 +126,9 @@ function Milestones({ milestones, hasTasks }) {
   return (
     <div className="card" style={{ padding: '20px 22px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-        <div style={{ fontSize: 13.5, fontWeight: 800 }}>Innings by Phase</div>
+        <div style={{ fontSize: 13.5, fontWeight: 800 }}>Progress by Phase</div>
         <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 600 }}>
-          {hasTasks ? '🏏 from the task checklist, grouped by auto-tagged phase' : isNA(milestones[0].pct) ? 'NA — needs target hours' : '🏏 marks a boundary cleared (template weighting)'}
+          {hasTasks ? '🏏 from the task checklist, grouped by auto-tagged phase' : isNA(milestones[0].pct) ? 'NA — needs target runs' : '🏏 marks a milestone reached (template weighting)'}
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 18 }}>
@@ -237,13 +241,13 @@ export default function ProjectDetailPage({ project, onBack }) {
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 32, flexWrap: 'wrap' }}>
               <div>
                 <div className="scorecard-score">
-                  {p.completed} <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>HRS</span>
+                  {p.completed} <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>RUNS</span>
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>HOURS LOGGED</div>
+                <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>RUNS LOGGED</div>
               </div>
               <div>
                 <div className="scorecard-score" style={{ opacity: 0.55 }}>
-                  <NAValue value={p.targetHours} /> <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>HRS</span>
+                  <NAValue value={p.targetHours} /> <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>RUNS</span>
                 </div>
                 <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>ORIGINAL ESTIMATE</div>
               </div>
@@ -252,27 +256,27 @@ export default function ProjectDetailPage({ project, onBack }) {
               {p.taskProgress?.hasTasks
                 ? `${p.progressPct}% complete — ${p.taskProgress.done}/${p.taskProgress.total} tasks done`
                 : isNA(p.progressPct)
-                ? 'Add a task checklist or target hours to calculate % complete'
-                : `${p.progressPct}% of target score chased (hours-based estimate)`}
+                ? 'Add a task checklist or target runs to calculate % complete'
+                : `${p.progressPct}% of target score chased (runs-based estimate)`}
             </div>
             <div style={{ height: 10, borderRadius: 6, background: 'rgba(255,255,255,0.22)', marginTop: 10, width: 420, maxWidth: '100%', overflow: 'hidden' }}>
               {!isNA(p.progressPct) && <div style={{ height: '100%', borderRadius: 6, background: '#FFFFFF', width: `${Math.min(100, p.progressPct)}%` }} />}
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 26, minWidth: 400 }}>
+          <div className="scorecard-stats-grid">
             {isDelivered ? (
               <div>
-                <div className="scorecard-stat-label">🏏 {isNA(p.marginHours) || p.marginHours >= 0 ? 'HOURS UNDER ESTIMATE' : 'HOURS OVER ESTIMATE'}</div>
-                <div className="scorecard-stat-value"><NAValue value={isNA(p.marginHours) ? NA : Math.abs(p.marginHours)} suffix=" hrs" /></div>
+                <div className="scorecard-stat-label">🏏 {isNA(p.marginHours) || p.marginHours >= 0 ? 'RUNS UNDER ESTIMATE' : 'RUNS OVER ESTIMATE'}</div>
+                <div className="scorecard-stat-value"><NAValue value={isNA(p.marginHours) ? NA : Math.abs(p.marginHours)} suffix=" runs" /></div>
               </div>
             ) : (
               <div>
-                <div className="scorecard-stat-label">🏏 RUNS TO CHASE</div>
-                <div className="scorecard-stat-value"><NAValue value={p.remaining} suffix=" hrs" /></div>
+                <div className="scorecard-stat-label">🏏 RUNS REMAINING</div>
+                <div className="scorecard-stat-value"><NAValue value={p.remaining} suffix=" runs" /></div>
               </div>
             )}
             <div>
-              <div className="scorecard-stat-label">⏱ {isDelivered ? 'DAYS TAKEN' : 'DAYS REMAINING'}</div>
+              <div className="scorecard-stat-label">⏱ {isDelivered ? 'OVERS TAKEN' : 'OVERS REMAINING'}</div>
               <div className="scorecard-stat-value"><NAValue value={isDelivered ? p.actualDurationDays : p.daysLeft} /></div>
             </div>
             <div>
@@ -294,11 +298,9 @@ export default function ProjectDetailPage({ project, onBack }) {
             <div>
               <div style={{ fontSize: 13.5, fontWeight: 800 }}>Run Rate</div>
               <div style={{ fontSize: 11, color: '#6B7280', fontWeight: 500, marginTop: 2 }}>
-                {p.rrUnit === 'tasks/day'
-                  ? `based on the task checklist (${p.taskProgress.done}/${p.taskProgress.total} done) — not hours`
-                  : isNA(p.rrTargetHours)
-                  ? 'hrs/day pace'
-                  : `dev + QA hours only (${p.rrTargetHours}h), not the full ${p.targetHours}h budget`}
+                {isNA(p.rrTargetHours)
+                  ? 'runs/over pace'
+                  : `dev + QA runs only (${p.rrTargetHours}r), not the full ${p.targetHours}r budget`}
               </div>
             </div>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: gap === null ? '#6B7280' : gap >= 0 ? '#15803D' : gap > -6 ? '#B45309' : '#DC2626' }}>
@@ -328,12 +330,12 @@ export default function ProjectDetailPage({ project, onBack }) {
           <div style={{ marginTop: 18, paddingTop: 14, borderTop: '1px solid #E8E8F2', fontSize: 12.5, color: '#6B7280', fontWeight: 500 }}>
             {isDelivered && !isNA(p.marginHours)
               ? p.marginHours >= 0
-                ? `${p.marginHours}h under budget — delivered using ${p.marginHours}h less than the ${p.targetHours}h budgeted, ${gap >= 0 ? 'at a pace above the budgeted rate.' : 'even though the average pace ran a little under the budgeted rate — the estimate simply had room in it.'}`
-                : `${Math.abs(p.marginHours)}h over budget — delivered, but used more hours than the ${p.targetHours}h budgeted.`
+                ? `${p.marginHours}r under budget — delivered using ${p.marginHours}r less than the ${p.targetHours}r budgeted, ${gap >= 0 ? 'at a pace above the budgeted rate.' : 'even though the average pace ran a little under the budgeted rate — the estimate simply had room in it.'}`
+                : `${Math.abs(p.marginHours)}r over budget — delivered, but used more runs than the ${p.targetHours}r budgeted.`
               : isNA(p.targetHours) || isNA(p.endDate)
-              ? 'Add target hours and an end date to compute the required run rate and gap.'
+              ? 'Add target runs and an end date to compute the required pace and gap.'
               : gap >= 0
-              ? 'Chase is comfortable at the observed run rate.'
+              ? 'Comfortably on pace to finish on time.'
               : `Squad needs ${Math.abs(gap)} more ${p.rrUnit} to finish on ${fmtDate(p.endDate)}.`}
           </div>
         </div>
@@ -350,7 +352,7 @@ export default function ProjectDetailPage({ project, onBack }) {
 
       <InningsSplit squad={p.squad} />
 
-      <section style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.95fr', gap: 16, marginTop: 16, alignItems: 'start' }}>
+      <section className="squad-wickets-grid">
         <div className="card" style={{ padding: '20px 22px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
             <div style={{ fontSize: 13.5, fontWeight: 800 }}>🏏 Project Squad</div>
@@ -364,17 +366,17 @@ export default function ProjectDetailPage({ project, onBack }) {
                   <div style={{ fontSize: 12.5, fontWeight: 700 }}>{m.name}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700 }}>{m.loggedHours}h logged</div>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>{m.loggedHours}r logged</div>
                 </div>
               </div>
             ))}
-            {p.squad.length === 0 && <div className="na">NA — no logged hours found for this project</div>}
+            {p.squad.length === 0 && <div className="na">NA — no logged runs found for this project</div>}
           </div>
         </div>
 
         <div className="card" style={{ padding: '20px 22px' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 13.5, fontWeight: 800 }}>🧱 Wickets</div>
+            <div style={{ fontSize: 13.5, fontWeight: 800 }}>🧱 Wickets (Blockers)</div>
             <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 600 }}>{p.wickets.length} active</div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>

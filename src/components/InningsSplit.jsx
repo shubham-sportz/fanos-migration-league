@@ -40,19 +40,19 @@ export function InningsSplitCompact({ squad }) {
       </div>
       <div style={{ display: 'flex', height: 8, borderRadius: 5, overflow: 'hidden', background: '#F0F1FA' }}>
         {teams.map((t) => (
-          <div key={t.team} style={{ width: `${(t.logged / total) * 100}%`, background: t.accent }} title={`${t.team}: ${t.logged}h`} />
+          <div key={t.team} style={{ width: `${(t.logged / total) * 100}%`, background: t.accent }} title={`${t.team}: ${t.logged}r`} />
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 7, fontSize: 14, fontWeight: 800 }}>
         {teams.map((t) => (
-          <span key={t.team} style={{ color: t.accent }}>{t.team} {t.logged}h</span>
+          <span key={t.team} style={{ color: t.accent }}>{t.team} {t.logged}r</span>
         ))}
       </div>
     </div>
   );
 }
 
-export default function InningsSplit({ squad, title = '🏏 Innings Split — Home vs Away', subtitle = 'Hours logged by each developer, grouped by assigned team' }) {
+export default function InningsSplit({ squad, title = '🏏 Innings Split — Home vs Away', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
   const hasTeams = squad.length > 0 && squad.every((m) => !isNA(m.team));
   const totalLogged = squad.reduce((s, m) => s + m.loggedHours, 0) || 1;
 
@@ -64,25 +64,22 @@ export default function InningsSplit({ squad, title = '🏏 Innings Split — Ho
           <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 500, marginTop: 3 }}>
             {hasTeams ? subtitle : 'NA — needs a team assignment per developer'}
           </div>
-          <div style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 600, marginTop: 5 }}>
-            Home team is the Run Team · Away team is the Build Team
-          </div>
         </div>
         <div className="num" style={{ fontSize: 26, fontWeight: 700 }}>
-          {totalLogged}<span style={{ fontSize: 13, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, color: '#6B7280' }}> hrs logged</span>
+          {totalLogged}<span style={{ fontSize: 13, fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, color: '#6B7280' }}> runs logged</span>
         </div>
       </div>
       {!hasTeams ? (
         <div className="na" style={{ padding: 22 }}>NA — assign each developer to a team (Home / Away) to enable this split</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: 16, padding: '18px 22px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(420px, 100%), 1fr))', gap: 16, padding: '18px 22px' }}>
           {groupByTeam(squad).map((t) => {
-            const maxLog = Math.max(...t.members.map((m) => m.loggedHours), 1);
+            const maxLog = 300;
             return (
               <div key={t.team} style={{ border: '1px solid #E8E8F2', borderRadius: 16, overflow: 'hidden' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '14px 16px', background: t.track }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: t.accent }}>{t.team}</div>
-                  <div className="num" style={{ fontSize: 22, fontWeight: 700 }}>{t.logged}h</div>
+                  <div className="num" style={{ fontSize: 22, fontWeight: 700 }}>{t.logged}r</div>
                 </div>
                 {t.members.map((m) => (
                   <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 16px', borderTop: '1px solid #F0F1FA' }}>
@@ -90,10 +87,10 @@ export default function InningsSplit({ squad, title = '🏏 Innings Split — Ho
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 12.5, fontWeight: 700 }}>{m.name}</div>
                       <div style={{ height: 7, borderRadius: 5, background: '#F0F1FA', overflow: 'hidden', marginTop: 7 }}>
-                        <div style={{ height: '100%', borderRadius: 5, width: `${Math.round((m.loggedHours / maxLog) * 100)}%`, background: t.accent }} />
+                        <div style={{ height: '100%', borderRadius: 5, width: `${Math.min(100, Math.round((m.loggedHours / maxLog) * 100))}%`, background: t.accent }} />
                       </div>
                     </div>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap' }}>{m.loggedHours}h</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap' }}>{m.loggedHours}r</div>
                   </div>
                 ))}
               </div>

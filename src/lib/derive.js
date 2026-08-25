@@ -159,11 +159,11 @@ export function deriveProject(project) {
   const plannedDurationDays = hasStart && hasEnd ? Math.max(1, dayDiff(project.startDate, project.endDate) + 1) : NA;
   const actualDurationDays = hasActualEnd && hasStart ? Math.max(1, dayDiff(project.startDate, project.actualEndDate) + 1) : NA;
 
-  // Run rate is scoped to TASKS completed, not hours — pace is "tasks/day"
-  // once a project has a real task checklist (FML-Data.xlsx's Tasks sheet). Falls
-  // back to hours/day (dev+QA effort only — Build Dev + Run Dev + QA, since
-  // Design/Run Config/Delivery aren't pace-relevant work) when no task list
-  // exists yet for the project.
+  // Run rate is scoped to HOURS (dev+QA effort only — Build Dev + Run Dev +
+  // QA, since Design/Run Config/Delivery aren't pace-relevant work), not
+  // tasks — pace is always "hrs/day". Task completion still drives progress
+  // % and status separately (see taskProgress above); this is a distinct
+  // "how fast are we burning hours" metric.
   const hasEffortSplit = !isNA(project.effortSplit);
   const devQaTargetHours = hasEffortSplit
     ? project.effortSplit.buildDev + project.effortSplit.runDev + project.effortSplit.qa
@@ -172,34 +172,19 @@ export function deriveProject(project) {
   const hasRRTarget = !isNA(rrTargetHours) && rrTargetHours > 0;
   const rrRemaining = hasRRTarget ? Math.max(0, rrTargetHours - completed) : NA;
 
-  const rrUnit = taskProgress.hasTasks ? 'tasks/day' : 'hrs/day';
+  const rrUnit = 'runs/over';
   let requiredRR, observedRunRate;
-  if (taskProgress.hasTasks) {
-    const tasksRemaining = taskProgress.total - taskProgress.done;
-    if (hasActualEnd) {
-      // Retrospective, once delivered: compare the fixed budgeted task pace
-      // (all tasks over the whole planned window) against the pace actually
-      // achieved (tasks done over the real time it took).
-      requiredRR = !isNA(plannedDurationDays) ? Math.round((taskProgress.total / plannedDurationDays) * 100) / 100 : NA;
-      observedRunRate = !isNA(actualDurationDays) ? Math.round((taskProgress.done / actualDurationDays) * 100) / 100 : NA;
-    } else {
-      // In-flight: tasks remaining ÷ days left (live required pace), and
-      // tasks done so far ÷ days elapsed since start (pace achieved so far).
-      requiredRR = hasEnd && daysLeft > 0 ? Math.round((tasksRemaining / daysLeft) * 100) / 100 : NA;
-      const elapsedDays = hasStart && !isNA(plannedDurationDays) ? Math.max(1, Math.min(plannedDurationDays, dayDiff(project.startDate, '2026-08-24') + 1)) : NA;
-      observedRunRate = !isNA(elapsedDays) ? Math.round((taskProgress.done / elapsedDays) * 100) / 100 : NA;
-    }
-  } else if (hasActualEnd) {
-    // Retrospective fallback (no task list): "days left from today" is
-    // meaningless for a finished project, so compare the fixed budgeted pace
-    // (dev+QA hours over the whole planned window) against the pace
-    // actually achieved over the real time it took.
+  if (hasActualEnd) {
+    // Retrospective, once delivered: "days left from today" is meaningless
+    // for a finished project, so compare the fixed budgeted pace (dev+QA
+    // hours over the whole planned window) against the pace actually
+    // achieved over the real time it took.
     requiredRR = hasRRTarget && !isNA(plannedDurationDays) ? Math.round((rrTargetHours / plannedDurationDays) * 100) / 100 : NA;
     observedRunRate = !isNA(actualDurationDays) ? Math.round((completed / actualDurationDays) * 100) / 100 : NA;
   } else {
-    // In-flight fallback (no task list): the live "required rate from here"
-    // (cricket RRR-style), and the pace observed so far across the days
-    // work has actually been logged.
+    // In-flight: the live "required rate from here" (cricket RRR-style),
+    // and the pace observed so far across the days work has actually been
+    // logged.
     requiredRR = hasRRTarget && hasEnd && daysLeft > 0 ? rrRemaining / daysLeft : NA;
     const observedSpanDays =
       project.firstLoggedDate && project.lastLoggedDate ? Math.max(1, dayDiff(project.firstLoggedDate, project.lastLoggedDate) + 1) : NA;

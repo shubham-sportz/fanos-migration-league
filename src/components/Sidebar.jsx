@@ -3,8 +3,7 @@ import { isNA } from '../lib/theme.js';
 
 const NAV_ITEMS = [
   { view: 'dashboard', label: 'Dashboard', icon: '🏏' },
-  { view: 'projects', label: 'Projects', icon: '▤' },
-  { view: 'resources', label: 'Resources', icon: '◍' },
+  { view: 'projects', label: 'Projects', icon: '👥' },
 ];
 
 export default function Sidebar({ view, onNavigate, portfolio }) {
@@ -12,10 +11,12 @@ export default function Sidebar({ view, onNavigate, portfolio }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-icon">🏏</div>
+        <div className="brand-icon">
+          <img src="https://www.sportzinteractive.net/static-assets/images/si-logo.svg?v=2.5" alt="" style={{ width: 40, height: 40 }} />
+        </div>
         <div>
-          <div className="brand-title">Fanos Migration League</div>
-          <div className="brand-sub">FML · Season 2026</div>
+          <div className="brand-title">FML</div>
+          <div className="brand-sub">Season 2026</div>
         </div>
       </div>
       <nav className="nav">
@@ -40,10 +41,10 @@ export default function Sidebar({ view, onNavigate, portfolio }) {
           <path d="M22 30 Q60 60 22 90" fill="none" stroke="#2A2AEA" strokeOpacity="0.22" strokeWidth="1.4" strokeDasharray="3 5" />
           <path d="M34 26 Q72 60 34 94" fill="none" stroke="#2A2AEA" strokeOpacity="0.18" strokeWidth="1.2" strokeDasharray="3 5" />
         </svg>
-        <div className="sidebar-summary-label">HOURS LOGGED TO DATE</div>
+        <div className="sidebar-summary-label">RUNS LOGGED TO DATE</div>
         <div className="sidebar-summary-value">
           {portfolio.completedHrs}
-          <span style={{ fontSize: 15, color: '#6B7280' }}> hrs</span>
+          <span style={{ fontSize: 15, color: '#6B7280' }}> runs</span>
         </div>
         <div className="bar-track">
           {!isNA(portfolio.portfolioPct) && (
@@ -51,7 +52,7 @@ export default function Sidebar({ view, onNavigate, portfolio }) {
           )}
         </div>
         <div className="sidebar-summary-sub">
-          {isNA(portfolio.portfolioPct) ? 'Target hours not yet supplied — % chased unavailable' : `Portfolio ${portfolio.portfolioPct}% chased`}
+          {isNA(portfolio.portfolioPct) ? 'Target runs not yet supplied — % chased unavailable' : `Portfolio ${portfolio.portfolioPct}% chased`}
         </div>
       </div>
     </aside>

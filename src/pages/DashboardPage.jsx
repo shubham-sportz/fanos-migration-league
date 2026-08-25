@@ -3,6 +3,7 @@ import { isNA } from '../lib/theme.js';
 import { KpiCard } from '../components/Shared.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import InningsSplit from '../components/InningsSplit.jsx';
+import ProjectTimeline from '../components/ProjectTimeline.jsx';
 import stadium from '../assets/stadium-sketch.avif';
 
 export default function DashboardPage({ projects, portfolio, onOpen }) {
@@ -35,7 +36,6 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
           <div className="hero-meta">24 August 2026 · {projects.length} live matches tracked from the delivery timesheet</div>
         </div>
         <div className="hero-actions">
-          <div className="pill">Live data</div>
           <div className="pill-solid">Live scoreboard</div>
         </div>
       </header>
@@ -48,20 +48,43 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
         <KpiCard
           label="EXPECTED vs ACTUAL"
           value={portfolio.completedHrs.toLocaleString()}
-          unit={isNA(portfolio.targetHrs) ? 'hrs logged' : `/ ${portfolio.targetHrs.toLocaleString()} hrs`}
-          sub={isNA(portfolio.remainingHrs) ? 'target hours pending for some matches' : `${portfolio.remainingHrs.toLocaleString()} hrs remaining to plan`}
+          unit={isNA(portfolio.targetHrs) ? 'runs logged' : `/ ${portfolio.targetHrs.toLocaleString()} runs`}
+          sub={isNA(portfolio.remainingHrs) ? 'target runs pending for some matches' : `${portfolio.remainingHrs.toLocaleString()} runs remaining to plan`}
           dot="#9698F7"
         />
       </section>
 
-      <section className="section">
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 16, marginTop: 16, padding: '10px 18px', borderRadius: 12, background: 'linear-gradient(90deg, #F5F5FF 0%, #FFF6EF 100%)', border: '1px solid #E8E8F2', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 13 }}>ℹ️</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
+          <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#2A2AEA', flex: '0 0 9px' }} />
+          <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>Home</strong> = Run Team
+        </span>
+        <span style={{ width: 1, height: 14, background: '#E0E0EC' }} />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
+          <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#F97316', flex: '0 0 9px' }} />
+          <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>Away</strong> = Build Team
+        </span>
+        <span style={{ width: 1, height: 14, background: '#E0E0EC' }} />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
+          <span style={{ fontSize: 11 }}>🏏</span>
+          <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>1 Runs</strong> = 1 Hours
+        </span>
+        <span style={{ width: 1, height: 14, background: '#E0E0EC' }} />
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
+          <span style={{ fontSize: 11 }}>⏱</span>
+          <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>1 Over</strong> = 1 Day
+        </span>
+      </div>
+
+      <section className="section" style={{ marginTop: 10 }}>
         <div className="section-head">
           <div>
             <div className="section-head-title">All Matches</div>
             <div className="section-head-sub">Select a card to open the match scorecard</div>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 16, padding: '18px 22px' }}>
+        <div className="cards-grid" style={{ padding: '18px 22px' }}>
           {projects.map((p) => (
             <ProjectCard key={p.code} project={p} onOpen={onOpen} />
           ))}
@@ -70,9 +93,11 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
 
       <InningsSplit
         squad={aggregatedSquad}
-        title="🏏 Innings Split — Home vs Away"
-        subtitle="Total hours logged across all matches, grouped by assigned team"
+        title="🏏 All Matches Innings Split — Home vs Away"
+        subtitle="Total runs logged across all matches, grouped by assigned team"
       />
+
+      <ProjectTimeline projects={projects} />
     </div>
   );
 }

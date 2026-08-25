@@ -22,14 +22,14 @@ export default function ProjectCard({ project: p, onOpen }) {
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 16 }}>
         <div className="num" style={{ fontSize: 26, fontWeight: 700 }}>
-          {p.completed} hrs
+          {p.completed} runs
         </div>
         <div style={{ fontSize: 13, fontWeight: 700 }}><NAValue value={p.progressPct} suffix="%" /></div>
       </div>
       <ProgressBar pct={p.progressPct} color={p.status === 'critical' ? '#DC2626' : p.status === 'atRisk' ? '#B45309' : '#2A2AEA'} thick />
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${statCount}, 1fr)`, gap: 10, marginTop: 16, paddingTop: 14, borderTop: '1px solid #F0F1FA' }}>
+      <div className="project-card-stats" style={{ gridTemplateColumns: `repeat(${statCount}, 1fr)` }}>
         <div>
-          <div style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>DAYS LEFT</div>
+          <div style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>OVERS LEFT</div>
           <div style={{ fontSize: 12.5, fontWeight: 700, marginTop: 3 }}><NAValue value={p.daysLeft} /></div>
         </div>
         <div>

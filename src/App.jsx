@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import ProjectsPage from './pages/ProjectsPage.jsx';
-import ResourcesPage from './pages/ResourcesPage.jsx';
 import ProjectDetailPage from './pages/ProjectDetailPage.jsx';
 import { loadProjects } from './data/loadProjects.js';
 import { deriveAll } from './lib/derive.js';
@@ -54,7 +53,6 @@ export default function App() {
       <main className="main">
         {view === 'dashboard' && <DashboardPage projects={projects} portfolio={portfolio} onOpen={handleOpen} />}
         {view === 'projects' && <ProjectsPage projects={projects} onOpen={handleOpen} />}
-        {view === 'resources' && <ResourcesPage projects={projects} />}
         {view === 'detail' && selectedProject && <ProjectDetailPage project={selectedProject} onBack={handleBack} />}
       </main>
     </div>

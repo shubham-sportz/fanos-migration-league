@@ -41,18 +41,10 @@ export function loadProjects() {
         loggedHours: hours,
         isManualOverride: overrides.some(([n]) => n === name),
       }));
-    const developerHours = squad.reduce((s, m) => s + m.loggedHours, 0);
-
-    // actualEffortSplit tracks hours by discipline (e.g. QA) that are on top
-    // of — not already inside — the named-developer totals above (e.g. a
-    // separate QA pass not attributed to any of the tracked developers). It
-    // adds to the real completed-hours total; it isn't just a side-by-side
-    // comparison against the planned effortSplit.
-    const effortAdditions = Object.entries(meta.actualEffortSplit || {})
-      .filter(([, v]) => !isNaN(v))
-      .reduce((s, [, v]) => s + v, 0);
-
-    const completedHours = developerHours + effortAdditions;
+    // completedHours counts only named-developer hours (HoursOverride/squad)
+    // — actualEffortSplit is shown separately on the Effort Breakdown card as
+    // a planned-vs-actual comparison, but no longer added into the total.
+    const completedHours = squad.reduce((s, m) => s + m.loggedHours, 0);
 
     return {
       code,
