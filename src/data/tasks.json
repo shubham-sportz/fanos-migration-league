@@ -1,0 +1,621 @@
+{
+  "_readme": "Master task list per project — the source of truth for project completion. Each task has a status: 'pending' (not started), 'inprogress', or 'done'. Project completion % = done tasks / total tasks, replacing the old hours-ratio progress calc. Add, remove, or re-word tasks freely; this list doesn't have to mirror the timesheet 1:1. DEFAULTS: this list was seeded from the real task titles found in the migration timesheet — for WF (already delivered) every task defaulted to 'done'; for still-in-flight projects (SO/PVL/MCFC) every task defaulted to 'inprogress' since the timesheet shows time was logged against it but not whether it's finished. Review and correct these statuses — they are placeholders, not a real assessment.",
+  "WF": [
+    {
+      "id": "FNS-76",
+      "name": "Video Listing",
+      "status": "done"
+    },
+    {
+      "id": "FNS-74",
+      "name": "Photo Listing",
+      "status": "done"
+    },
+    {
+      "id": "FNS-72",
+      "name": "News Listing",
+      "status": "done"
+    },
+    {
+      "id": "FNS-73",
+      "name": "News Detail",
+      "status": "done"
+    },
+    {
+      "id": "FNS-80",
+      "name": "Media Listing",
+      "status": "done"
+    },
+    {
+      "id": "FNS-77",
+      "name": "Video Detail",
+      "status": "done"
+    },
+    {
+      "id": "FNS-75",
+      "name": "Photo Detail",
+      "status": "done"
+    },
+    {
+      "id": "FNS-79",
+      "name": "Community Detail",
+      "status": "done"
+    },
+    {
+      "id": "FNS-78",
+      "name": "Community Listing",
+      "status": "done"
+    },
+    {
+      "id": "FNS-83",
+      "name": "Terms & Conditions",
+      "status": "done"
+    },
+    {
+      "id": "FNS-81",
+      "name": "About",
+      "status": "done"
+    },
+    {
+      "id": "FNS-128",
+      "name": "Video Redirect Bug",
+      "status": "done"
+    },
+    {
+      "id": "FNS-125",
+      "name": "Video Title Font Size",
+      "status": "done"
+    },
+    {
+      "id": "FNS-123",
+      "name": "Photo Cards Clickable",
+      "status": "done"
+    },
+    {
+      "id": "FNS-121",
+      "name": "Swiper Nav Alignment",
+      "status": "done"
+    },
+    {
+      "id": "FNS-120",
+      "name": "Widget Titles Caps",
+      "status": "done"
+    },
+    {
+      "id": "FNS-210",
+      "name": "QA sanity fixes",
+      "status": "done"
+    },
+    {
+      "id": null,
+      "name": "GO Live",
+      "status": "done"
+    },
+    {
+      "id": "FNS-61",
+      "name": "Homepage Header & Footer",
+      "status": "done"
+    },
+    {
+      "id": "FNS-63",
+      "name": "Homepage Static Banner",
+      "status": "done"
+    },
+    {
+      "id": "FNS-64",
+      "name": "Homepage Schedule Widget",
+      "status": "done"
+    },
+    {
+      "id": "FNS-88",
+      "name": "Buy Tickets URL JSON",
+      "status": "done"
+    },
+    {
+      "id": "FNS-87",
+      "name": "Fixtures & Results",
+      "status": "done"
+    },
+    {
+      "id": "FNS-93",
+      "name": "Matchcentre",
+      "status": "done"
+    },
+    {
+      "id": "FNS-92",
+      "name": "Standing UI development",
+      "status": "done"
+    },
+    {
+      "id": "FNS-91",
+      "name": "Standings API integration",
+      "status": "done"
+    },
+    {
+      "id": "FNS-65",
+      "name": "Homepage Standings widget",
+      "status": "done"
+    },
+    {
+      "id": "FNS-90",
+      "name": "Stats UI",
+      "status": "done"
+    },
+    {
+      "id": "FNS-89",
+      "name": "Stats API integration",
+      "status": "done"
+    },
+    {
+      "id": "FNS-62",
+      "name": "Homepage Showcase Carousel",
+      "status": "done"
+    },
+    {
+      "id": "FNS-66",
+      "name": "Homepage News & Videos",
+      "status": "done"
+    },
+    {
+      "id": "FNS-67",
+      "name": "Homepage Photos",
+      "status": "done"
+    },
+    {
+      "id": "FNS-68",
+      "name": "Homepage Squad",
+      "status": "done"
+    },
+    {
+      "id": "FNS-69",
+      "name": "Homepage Shop Widget",
+      "status": "done"
+    },
+    {
+      "id": "FNS-70",
+      "name": "Homepage Newsletter Widget",
+      "status": "done"
+    },
+    {
+      "id": "FNS-94",
+      "name": "Squad Page",
+      "status": "done"
+    },
+    {
+      "id": "FNS-84",
+      "name": "404",
+      "status": "done"
+    },
+    {
+      "id": "FNS-96",
+      "name": "Custom JSON",
+      "status": "done"
+    },
+    {
+      "id": "FNS-95",
+      "name": "Player Profile",
+      "status": "done"
+    }
+  ],
+  "SO": [
+    {
+      "id": "FNS-10",
+      "name": "Home - News",
+      "status": "done"
+    },
+    {
+      "id": "FNS-101",
+      "name": "Home - Videos",
+      "status": "done"
+    },
+    {
+      "id": "FNS-51",
+      "name": "Points Table",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-49",
+      "name": "Stats",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-6",
+      "name": "Showcase",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-13",
+      "name": "Home - shop",
+      "status": "done"
+    },
+    {
+      "id": "FNS-41",
+      "name": "Schedule",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-8",
+      "name": "Home - Fixtures",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-5",
+      "name": "Header & Footer, Sponsors",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-12",
+      "name": "Home - Players",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "FREE Due Blocker",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Wf fixses",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-44",
+      "name": "Players",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-45",
+      "name": "Support Staff",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-46",
+      "name": "player Profile",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Fixses",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Support",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "GO Live",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Top Menu, Bottom Menu",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Footer",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Both Standings css",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "HP News",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "HP Videos",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "HP Photos",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "News Listing & Detail",
+      "status": "done"
+    },
+    {
+      "id": null,
+      "name": "Video Listing and Detail",
+      "status": "done"
+    },
+    {
+      "id": null,
+      "name": "Photos Listing & Detail",
+      "status": "done"
+    },
+    {
+      "id": "FNS-29",
+      "name": "Terms and Conditions",
+      "status": "done"
+    },
+    {
+      "id": "FNS-28",
+      "name": "Privacy Policy",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-31",
+      "name": "Thank you",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-30",
+      "name": "404",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-32",
+      "name": "Partnership Framework",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-24",
+      "name": "Where to Watch",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-25",
+      "name": "Womens t20 exhibition",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-23",
+      "name": "Wallpapers",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-33",
+      "name": "Registration form (popup)",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-35",
+      "name": "Contact Us",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-168",
+      "name": "Boundary Builder page + form",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Unit testing fixses of all form",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-20",
+      "name": "Videos - Listing",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-18",
+      "name": "Photos - Listing",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-16",
+      "name": "News - Listing",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-19",
+      "name": "Photos - Detail",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-17",
+      "name": "News - Detail",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-21",
+      "name": "Videos - Detail",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Showcase",
+      "status": "inprogress"
+    },
+    {
+      "id": "FNS-43",
+      "name": "Matchcentre",
+      "status": "inprogress"
+    }
+  ],
+  "PVL": [
+    {
+      "id": null,
+      "name": "Player registration embed",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "HP Static Banner",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Team strip",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "404",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "T&C page",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "About us",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Hall of fame",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Testing",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Buy Tickets banner",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Islander Banner",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Esports",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Social Hub",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Esports Player Profile",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Terms & Conditions",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Ticket T&C",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Community",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Safeguarding",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Privacy Policy",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Cookie Policy",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Error Page",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Header & Footer",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Standings",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Squad",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "External links - 1 ticket maybe",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Buffer Due to New Module",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Fixses",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "GO Live",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Aapla 12th Man Poll",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Goal of the Month",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Homepage listings",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "All listing pages",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "All Detail pages",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "HP Showcase",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Buffer Due to FIH",
+      "status": "inprogress"
+    }
+  ],
+  "MCFC": [
+    {
+      "id": null,
+      "name": "Fixses",
+      "status": "inprogress"
+    },
+    {
+      "id": null,
+      "name": "Go Live",
+      "status": "inprogress"
+    }
+  ]
+}

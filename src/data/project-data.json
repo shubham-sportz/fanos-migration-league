@@ -1,0 +1,177 @@
+{
+  "_readme": "Single place to edit all planning/static data for the dashboard. Squad composition and logged hours are parsed automatically from 'Migration Tracker - Combined.csv' \u2014 use each project's actualHoursByDeveloper below only to override or fill in gaps in that parse. Use the string \"NA\" for anything unknown \u2014 the dashboard renders it as NA and skips calculations that depend on it, instead of guessing.",
+  "capacityHoursPerDay": 8,
+  "_capacityHoursPerDay_note": "Assumed sustainable hours/day per developer, used only for the Resources page 'load %'. A policy assumption, not derived from any file.",
+  "developers": {
+    "_note": "role/team per developer. team is 'Home' or 'Away' (used for the Home vs Away split on each project's detail page).",
+    "Amey": {
+      "role": "NA",
+      "team": "Home"
+    },
+    "Ayush": {
+      "role": "NA",
+      "team": "Away"
+    },
+    "Mala": {
+      "role": "NA",
+      "team": "Home"
+    },
+    "Mayur": {
+      "role": "NA",
+      "team": "Away"
+    },
+    "Shubham": {
+      "role": "NA",
+      "team": "Away"
+    },
+    "Siddharth": {
+      "role": "NA",
+      "team": "Home"
+    },
+    "Supriya": {
+      "role": "NA",
+      "team": "Home"
+    }
+  },
+  "projects": {
+    "_note": "One entry per project code. client/kind/priority/targetHours/startDate/endDate/effortSplit come from 'Clients _ FanOS Play & Surface Migration - Sheet6.csv' (that sheet's 'Total' column = targetHours, the estimated/expected effort for the whole project). actualEndDate is when the project actually wrapped, confirmed separately from that plan \u2014 set it to enable the 'Won'/'Late' status and the planned-vs-actual delivery date comparison; leave 'NA' while still in flight. statusOverride manually forces the status badge to 'inprogress' | 'upcoming' | 'blocked' | 'onTrack' | 'atRisk' | 'critical' regardless of the computed call \u2014 use it when the automatic task/schedule comparison reads wrong for where a project actually is; leave 'NA' to trust the computed status. wickets/nextOver are not in either source file yet \u2014 fill in when available.",
+    "WF": {
+      "client": "Washington Freedom",
+      "kind": "Web",
+      "priority": "P1",
+      "targetHours": 248,
+      "startDate": "2026-07-27",
+      "endDate": "2026-08-28",
+      "actualEndDate": "2026-08-21",
+      "statusOverride": "NA",
+      "effortSplit": {
+        "buildDev": 104,
+        "runConfig": 0,
+        "runDev": 48,
+        "design": 32,
+        "qa": 40,
+        "delivery": 24
+      },
+      "actualEffortSplit": {
+        "_note": "Optional. Actual hours logged against each discipline, to compare against effortSplit (the planned/budgeted hours) above. IMPORTANT: these hours are ADDED to completedHours (the project's total actual/logged hours) \u2014 only fill in a category here if that work is NOT already counted in actualHoursByDeveloper/the timesheet for this project (e.g. a QA pass done by someone not in the tracked squad), or you'll double-count. Leave a category as \"NA\" until it's tracked.",
+        "buildDev": "NA",
+        "runConfig": "NA",
+        "runDev": "NA",
+        "design": 32,
+        "qa": 46,
+        "delivery": 24
+      },
+      "actualHoursByDeveloper": {
+        "_note": "Optional. Add/override actual hours logged by a developer on THIS project \u2014 e.g. \"Shubham\": 60. If a name is listed here, this number is used instead of whatever the timesheet CSV parsed for them on this project (handy when the CSV entry has no hour figure, like MCFC's below). Leave empty to trust the CSV parse entirely.",
+        "Shubham": 61,
+        "Ayush": 64,
+        "Amey": 48,
+        "Mayur": 32
+      },
+      "wickets": [],
+      "nextOver": []
+    },
+    "SO": {
+      "client": "Seattle Orcas",
+      "kind": "Web",
+      "priority": "P1",
+      "targetHours": 398,
+      "startDate": "2026-07-28",
+      "endDate": "2026-09-04",
+      "actualEndDate": "NA",
+      "statusOverride": "inprogress",
+      "effortSplit": {
+        "buildDev": 52,
+        "runConfig": 50,
+        "runDev": 152,
+        "design": 80,
+        "qa": 40,
+        "delivery": 24
+      },
+      "actualEffortSplit": {
+        "_note": "Optional. Same as WF above \u2014 these hours are ADDED to completedHours, so only fill in a category here if it is not already counted in actualHoursByDeveloper for this project.",
+        "buildDev": "NA",
+        "runConfig": "NA",
+        "runDev": "NA",
+        "design": 80,
+        "qa": "NA",
+        "delivery": 24
+      },
+      "actualHoursByDeveloper": {
+        "Amey": 64,
+        "Supriya": 42,
+        "Siddharth": 0,
+        "Mala": 0
+      },
+      "wickets": [],
+      "nextOver": []
+    },
+    "PVL": {
+      "client": "Prime Volleyball League",
+      "kind": "Web",
+      "priority": "P2",
+      "targetHours": 254,
+      "startDate": "2026-08-10",
+      "endDate": "2026-09-16",
+      "actualEndDate": "NA",
+      "statusOverride": "upcoming",
+      "effortSplit": {
+        "buildDev": 10,
+        "runConfig": 50,
+        "runDev": 106,
+        "design": 40,
+        "qa": 32,
+        "delivery": 16
+      },
+      "actualEffortSplit": {
+        "_note": "Optional. Same as WF above \u2014 these hours are ADDED to completedHours, so only fill in a category here if it is not already counted in actualHoursByDeveloper for this project.",
+        "buildDev": "NA",
+        "runConfig": "NA",
+        "runDev": "NA",
+        "design": "NA",
+        "qa": "NA",
+        "delivery": "NA"
+      },
+      "actualHoursByDeveloper": {
+        "_note": "Optional. Same as WF above \u2014 add a developer name : hours here to override the CSV-parsed total for this project. Overridden to 0 for all three tracked developers below, so PVL's spent hours read 0 instead of the CSV-parsed 103h.",
+        "Mala": 0,
+        "Siddharth": 0,
+        "Supriya": 0
+      },
+      "wickets": [],
+      "nextOver": []
+    },
+    "MCFC": {
+      "client": "Mumbai City FC",
+      "kind": "Web",
+      "priority": "P1",
+      "targetHours": 482,
+      "startDate": "2026-08-03",
+      "endDate": "2026-10-09",
+      "actualEndDate": "NA",
+      "statusOverride": "upcoming",
+      "effortSplit": {
+        "buildDev": 182,
+        "runConfig": 50,
+        "runDev": 106,
+        "design": 40,
+        "qa": 64,
+        "delivery": 40
+      },
+      "actualEffortSplit": {
+        "_note": "Optional. Same as WF above \u2014 these hours are ADDED to completedHours, so only fill in a category here if it is not already counted in actualHoursByDeveloper for this project.",
+        "buildDev": "NA",
+        "runConfig": "NA",
+        "runDev": "NA",
+        "design": "NA",
+        "qa": "NA",
+        "delivery": "NA"
+      },
+      "actualHoursByDeveloper": {
+        "_note": "The timesheet rows for MCFC (e.g. 'MCFC Fixses') have no hour figure in the source CSV, so the parser reads 0h for Amey and Mala here even though they logged real work. Fill in the real hours below to correct it, e.g. \"Amey\": 12, \"Mala\": 8."
+      },
+      "wickets": [],
+      "nextOver": []
+    }
+  }
+}
