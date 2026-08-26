@@ -860,4 +860,26 @@ table.data-table {
   table.data-table {
     min-width: 640px;
   }
+
+  .effort-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px !important;
+  }
+
+  .effort-ring {
+    width: 104px !important;
+    height: 104px !important;
+    flex-basis: 104px !important;
+  }
+
+  .effort-legend {
+    width: 100%;
+  }
+
+  .effort-legend-value {
+    flex: 1 1 100%;
+    white-space: normal;
+    text-align: right;
+  }
 }

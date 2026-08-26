@@ -17,10 +17,10 @@ export function loadProjects() {
       taskCount: 0,
       tasks: [],
     };
-    const rolesByName = Object.fromEntries(DEVELOPER_ENTRIES.map(([name, d]) => [name, d]));
+    const teamsByName = Object.fromEntries(DEVELOPER_ENTRIES.map(([name, d]) => [name, d]));
 
     // Logged hours come ONLY from the workbook's HoursOverride sheet — the
-    // Timesheet sheet just tracks who worked on what and when, no hours.
+    // per-project sheet just tracks who worked on what and when, no hours.
     // `logged.developers` below is a presence map (everyone the timesheet
     // mentions, at 0h) so a developer still shows up in the squad even
     // before their hours are added to HoursOverride.
@@ -36,8 +36,8 @@ export function loadProjects() {
       .sort((a, b) => b[1] - a[1])
       .map(([name, hours]) => ({
         name,
-        role: rolesByName[name]?.role || NA,
-        team: rolesByName[name]?.team || NA,
+        role: NA,
+        team: teamsByName[name]?.team || NA,
         loggedHours: hours,
         isManualOverride: overrides.some(([n]) => n === name),
       }));

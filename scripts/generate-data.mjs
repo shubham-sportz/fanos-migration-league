@@ -57,14 +57,14 @@ function dateOrNA(v) {
   return String(v).trim();
 }
 
-// --- Config ---
-const configRows = sheet('Config');
-const config = Object.fromEntries(configRows.map((r) => [r.Key, r.Value]));
+// --- Capacity: fixed at 8 hours/day (was previously the Config sheet's
+// only entry; that sheet has been removed as it never carried anything else). ---
+const CAPACITY_HOURS_PER_DAY = 8;
 
 // --- Developers ---
 const developers = {};
 sheet('Developers').forEach((r) => {
-  developers[r.Name] = { role: orNA(r.Role), team: orNA(r.Team) };
+  developers[r.Name] = { team: orNA(r.Team) };
 });
 
 // --- Projects (planned + actual effort split) ---
@@ -112,63 +112,74 @@ sheet('Wickets').forEach((r) => {
   projects[r.ProjectCode].wickets.push({ title: orNA(r.Title), owner: orNA(r.Owner), impact: orNA(r.Impact) });
 });
 
-// --- Tasks ---
+// --- Per-project sheet (one sheet per project Code, e.g. "WF", "MCFC"):
+// merges what used to be three separate sheets (Tasks, TaskTimeline,
+// Timesheet) into one log-entry-per-row sheet. Each row is one developer's
+// work-log entry against one task on one date, carrying that task's status
+// and planned/actual timeline alongside it (repeated across every row for
+// the same task — denormalized, but there's only ever one sheet to edit).
+//
+// From this we still derive the same two things the rest of the app expects:
+//  - tasks[code]: the master task checklist, one entry per unique task
+//  - timesheet[code]: per-project squad presence + logged date range
+// Ticket links follow one fixed pattern across every project (confirmed
+// against the Tickets column in Migration Tracker.xlsx) — a TaskID always
+// resolves to its Jira ticket at this base URL.
+const TICKET_BASE = 'https://sportzinteractive.atlassian.net/browse/';
+
 const tasks = {};
-sheet('Tasks').forEach((r) => {
-  (tasks[r.ProjectCode] = tasks[r.ProjectCode] || []).push({
-    id: r.TaskID && r.TaskID !== 'NA' ? r.TaskID : null,
-    name: r.TaskName,
-    status: r.Status,
-    plannedStart: NA,
-    plannedEnd: NA,
-    actualStart: NA,
-    actualEnd: NA,
-  });
-});
-
-// --- TaskTimeline: planned/actual start & end per task, merged onto the matching Tasks entry ---
-sheet('TaskTimeline').forEach((r) => {
-  const list = tasks[r.ProjectCode];
-  if (!list) return;
-  const match = r.TaskID && r.TaskID !== 'NA'
-    ? list.find((t) => t.id === r.TaskID)
-    : list.find((t) => t.name === r.TaskName);
-  if (!match) return;
-  match.plannedStart = dateOrNA(r.PlannedStart);
-  match.plannedEnd = dateOrNA(r.PlannedEnd);
-  match.actualStart = dateOrNA(r.ActualStart);
-  match.actualEnd = dateOrNA(r.ActualEnd);
-});
-
-// --- Timesheet: no hours here — hours come from HoursOverride only. This
-// sheet re-aggregates into per-project squad presence (who worked on it) and
-// the date range work was logged over; each Timesheet row is now a
-// StartDate/EndDate span rather than a single day. ---
 const timesheet = {};
 Object.keys(projects).forEach((code) => {
-  timesheet[code] = { developers: {}, squadSize: 0, minDate: null, maxDate: null, taskCount: 0, tasks: [] };
-});
-sheet('Timesheet').forEach((r) => {
-  const p = timesheet[r.ProjectCode];
-  if (!p) return;
-  // Presence marker, not an hours sum — actual hours are read from
-  // HoursOverride in loadProjects.js. Leaving this at 0 means "mentioned in
-  // the timesheet but no hours override supplied yet" rather than dropping
-  // the person from the squad entirely.
-  if (!(r.Developer in p.developers)) p.developers[r.Developer] = 0;
-  const startISO = dateOrNA(r.StartDate);
-  const endISO = dateOrNA(r.EndDate) !== NA ? dateOrNA(r.EndDate) : startISO;
-  p.tasks.push({ dev: r.Developer, date: endISO, startDate: startISO, endDate: endISO, text: r.TaskText, hours: 0 });
-  if (startISO !== NA && (!p.minDate || startISO < p.minDate)) p.minDate = startISO;
-  if (endISO !== NA && (!p.maxDate || endISO > p.maxDate)) p.maxDate = endISO;
-});
-Object.values(timesheet).forEach((p) => {
+  // Each project sheet is an Excel Table with a couple hundred blank rows
+  // left below the real data for future entries — skip those until a
+  // developer name is actually filled in.
+  const rows = sheet(code).filter((r) => r.Developer && r.Developer !== 'NA');
+
+  const taskList = [];
+  const seen = new Set();
+  const p = { developers: {}, squadSize: 0, minDate: null, maxDate: null, taskCount: 0, tasks: [] };
+
+  rows.forEach((r) => {
+    // Master checklist: one entry per unique task, keyed by TaskID when
+    // present, else by TaskName (mirrors how blank-TaskID rows were already
+    // matched back to a task when this workbook still had separate sheets).
+    const taskKey = r.TaskID && r.TaskID !== 'NA' ? `id:${r.TaskID}` : `name:${r.TaskName}`;
+    if (!seen.has(taskKey)) {
+      seen.add(taskKey);
+      const id = r.TaskID && r.TaskID !== 'NA' ? r.TaskID : null;
+      taskList.push({
+        id,
+        url: id ? `${TICKET_BASE}${id}` : NA,
+        name: r.TaskName,
+        status: r.Status,
+        plannedStart: dateOrNA(r['planned start date']),
+        plannedEnd: dateOrNA(r['planned end date']),
+        actualStart: dateOrNA(r['Actual start date']),
+        actualEnd: dateOrNA(r['Actual end date']),
+      });
+    }
+
+    // Presence marker, not an hours sum — actual hours are read from
+    // HoursOverride in loadProjects.js. Leaving this at 0 means "mentioned in
+    // the sheet but no hours override supplied yet" rather than dropping the
+    // person from the squad entirely.
+    if (!(r.Developer in p.developers)) p.developers[r.Developer] = 0;
+    const dateISO = dateOrNA(r.Date);
+    const text = r.TaskID && r.TaskID !== 'NA' ? `${r.TaskName} [${r.TaskID}]` : String(r.TaskName);
+    p.tasks.push({ dev: r.Developer, date: dateISO, startDate: dateISO, endDate: dateISO, text, hours: 0 });
+    if (dateISO !== NA && (!p.minDate || dateISO < p.minDate)) p.minDate = dateISO;
+    if (dateISO !== NA && (!p.maxDate || dateISO > p.maxDate)) p.maxDate = dateISO;
+  });
+
   p.squadSize = Object.keys(p.developers).length;
   p.taskCount = p.tasks.length;
+
+  tasks[code] = taskList;
+  timesheet[code] = p;
 });
 
 const generated = {
-  capacityHoursPerDay: config.capacityHoursPerDay ?? 8,
+  capacityHoursPerDay: CAPACITY_HOURS_PER_DAY,
   developers,
   projects,
   tasks,

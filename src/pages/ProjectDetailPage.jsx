@@ -54,7 +54,21 @@ function TaskChecklist({ taskProgress, taskList }) {
                 {s.label}
               </span>
               <span style={{ fontSize: 12.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {t.name} {t.id && <span style={{ color: '#9CA3AF', fontWeight: 600 }}>{t.id}</span>}
+                {!isNA(t.url) ? (
+                  <a
+                    href={t.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ color: 'inherit', textDecoration: 'none' }}
+                  >
+                    {t.name} {t.id && <span style={{ color: '#2A2AEA', fontWeight: 600, textDecoration: 'underline' }}>{t.id}</span>}
+                  </a>
+                ) : (
+                  <>
+                    {t.name} {t.id && <span style={{ color: '#9CA3AF', fontWeight: 600 }}>{t.id}</span>}
+                  </>
+                )}
               </span>
             </div>
           );
@@ -84,23 +98,23 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
       <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 500, marginTop: 3 }}>
         {hasSplit ? 'Planned runs (ring) · logged runs where tracked' : 'NA — needs effort-category runs per project'}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 18 }}>
-        <div style={{ position: 'relative', width: 124, height: 124, flex: '0 0 124px', borderRadius: '50%', background: gradient }}>
+      <div className="effort-row" style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 18 }}>
+        <div className="effort-ring" style={{ position: 'relative', width: 124, height: 124, flex: '0 0 124px', borderRadius: '50%', background: gradient }}>
           <div style={{ position: 'absolute', inset: 19, background: '#FFFFFF', borderRadius: '50%', display: 'grid', placeContent: 'center', textAlign: 'center' }}>
             <div className="num" style={{ fontSize: 28, fontWeight: 700, lineHeight: 1 }}>{isNA(target) ? 'NA' : target}</div>
             <div style={{ fontSize: 9, letterSpacing: 1, color: '#6B7280', fontWeight: 700 }}>PLANNED RUNS</div>
           </div>
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 9 }}>
+        <div className="effort-legend" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 9 }}>
           {EFFORT_LABELS.map(([k, label, color]) => {
             const actual = actualEffortSplit?.[k];
             const hasActual = !isNA(actual);
             const variance = hasActual && hasSplit ? actual - effortSplit[k] : null;
             return (
-              <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                <span style={{ width: 8, height: 8, borderRadius: 3, background: hasSplit ? color : '#E8E8F2' }} />
-                <span style={{ flex: 1, fontSize: 12, fontWeight: 600 }}>{label}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: '#6B7280' }}>
+              <div key={k} className="effort-legend-item" style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap' }}>
+                <span style={{ width: 8, height: 8, borderRadius: 3, background: hasSplit ? color : '#E8E8F2', flex: '0 0 auto' }} />
+                <span className="effort-legend-label" style={{ flex: 1, minWidth: 0, fontSize: 12, fontWeight: 600 }}>{label}</span>
+                <span className="effort-legend-value" style={{ fontSize: 12, fontWeight: 700, color: '#6B7280' }}>
                   {hasSplit ? `${effortSplit[k]}r planned` : 'NA'}
                   {hasActual && (
                     <>
