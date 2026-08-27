@@ -9,7 +9,8 @@
     "prebuild": "node scripts/generate-data.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "data:build": "node scripts/generate-data.mjs"
+    "data:build": "node scripts/generate-data.mjs",
+    "sync-sheet": "node scripts/sync-from-sheet.mjs"
   },
   "dependencies": {
     "papaparse": "^5.4.1",
