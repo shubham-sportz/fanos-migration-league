@@ -2,13 +2,11 @@ import React from 'react';
 import { isNA } from '../lib/theme.js';
 import { initials, fmtDate } from '../lib/derive.js';
 import { clientColor } from '../lib/clientColors.js';
-import { StatusBadge, ProgressBar, Avatar, NAValue } from './Shared.jsx';
-import { InningsSplitCompact } from './InningsSplit.jsx';
+import { StatusBadge, CircularProgress, Avatar, NAValue, TotalHoursDonut } from './Shared.jsx';
 
 export default function ProjectCard({ project: p, onOpen }) {
   const isWon = p.status === 'won';
   const showReqRR = !isNA(p.daysLeft) && p.daysLeft > 0;
-  const statCount = 3 + (showReqRR ? 1 : 0);
 
   return (
     <div className={`project-card${isWon ? ' project-card--won' : ''}`} onClick={() => onOpen(p.code)}>
@@ -20,48 +18,46 @@ export default function ProjectCard({ project: p, onOpen }) {
         </div>
         <StatusBadge label={p.statusLabel} fg={p.statusFg} bg={p.statusBg} />
       </div>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 16 }}>
-        <div className="num" style={{ fontSize: 26, fontWeight: 700 }}>
-          {p.completed} runs
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 16 }}>
+        <div style={{ flex: '0 0 130px', display: 'flex', justifyContent: 'center' }}>
+          <CircularProgress pct={p.progressPct} color={p.status === 'critical' ? '#DC2626' : p.status === 'atRisk' ? '#B45309' : '#2A2AEA'} />
         </div>
-        <div style={{ fontSize: 13, fontWeight: 700 }}><NAValue value={p.progressPct} suffix="%" /></div>
-      </div>
-      <ProgressBar pct={p.progressPct} color={p.status === 'critical' ? '#DC2626' : p.status === 'atRisk' ? '#B45309' : '#2A2AEA'} thick />
-      <div className="project-card-stats" style={{ gridTemplateColumns: `repeat(${statCount}, 1fr)` }}>
-        <div>
-          <div style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>OVERS LEFT</div>
-          <div style={{ fontSize: 12.5, fontWeight: 700, marginTop: 3 }}><NAValue value={p.daysLeft} /></div>
-        </div>
-        <div>
-          <div style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>CURRENT RR</div>
-          <div style={{ fontSize: 12.5, fontWeight: 700, marginTop: 3 }}>
-            {isNA(p.observedRunRate) ? <span className="na">NA</span> : `${p.observedRunRate} ${p.rrUnit}`}
+        <div className="project-card-stats" style={{ flex: '0 0 200px', width: 200, marginLeft: 'auto', gridTemplateColumns: '1fr', marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>OVERS LEFT</span>
+            <span style={{ fontSize: 12.5, fontWeight: 700 }}><NAValue value={p.daysLeft} /></span>
           </div>
-        </div>
-        {showReqRR && (
-          <div>
-            <div style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>REQ. RR</div>
-            <div style={{ fontSize: 12.5, fontWeight: 700, marginTop: 3 }}>
-              {isNA(p.requiredRR) ? <span className="na">NA</span> : `${Math.round(p.requiredRR)} ${p.rrUnit}`}
-            </div>
-          </div>
-        )}
-        <div>
-          <div style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>SQUAD</div>
-          <div style={{ fontSize: 12.5, fontWeight: 700, marginTop: 3 }}>{p.squadSize} players</div>
-        </div>
-      </div>
-      <InningsSplitCompact squad={p.squad} />
-      {!isNA(p.endDate) && (
-        <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #F0F1FA', fontSize: 11.5, fontWeight: 600 }}>
-          <span style={{ color: '#6B7280' }}>Deadline {fmtDate(p.endDate)}</span>
-          {!isNA(p.actualEndDate) && (
-            <span style={{ marginLeft: 8, color: p.deliveryVarianceDays > 0 ? '#B45309' : '#15803D', fontWeight: 700 }}>
-              ✓ Completed {fmtDate(p.actualEndDate)} · {p.deliveryVarianceLabel}
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>CURRENT RR</span>
+            <span style={{ fontSize: 12.5, fontWeight: 700 }}>
+              {isNA(p.observedRunRate) ? <span className="na">NA</span> : `${p.observedRunRate} ${p.rrUnit}`}
             </span>
+          </div>
+          {showReqRR && (
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>REQ. RR</span>
+              <span style={{ fontSize: 12.5, fontWeight: 700 }}>
+                {isNA(p.requiredRR) ? <span className="na">NA</span> : `${Math.round(p.requiredRR)} ${p.rrUnit}`}
+              </span>
+            </div>
           )}
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 9.5, letterSpacing: 0.8, color: '#6B7280', fontWeight: 700 }}>SQUAD</span>
+            <span style={{ fontSize: 12.5, fontWeight: 700 }}>{p.squadSize} players</span>
+          </div>
         </div>
-      )}
+      </div>
+      <TotalHoursDonut squad={p.squad} actualEffortSplit={p.actualEffortSplit} compact />
+      <div style={{ marginTop: 'auto', paddingTop: 10, borderTop: '1px solid #F0F1FA', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span className="badge" style={{ background: '#F3F4F6', color: '#6B7280' }}>
+          Deadline {fmtDate(p.endDate)}
+        </span>
+        {!isNA(p.actualEndDate) && (
+          <span className="badge" style={{ marginLeft: 'auto', background: p.deliveryVarianceDays > 0 ? '#FDF4E5' : '#E9F7EF', color: p.deliveryVarianceDays > 0 ? '#B45309' : '#15803D' }}>
+            ✓ Completed {fmtDate(p.actualEndDate)} · {p.deliveryVarianceLabel}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

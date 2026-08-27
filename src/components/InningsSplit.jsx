@@ -28,30 +28,6 @@ function groupByTeam(squad) {
     });
 }
 
-export function InningsSplitCompact({ squad }) {
-  const hasTeams = squad.length > 0 && squad.every((m) => !isNA(m.team));
-  if (!hasTeams) return null;
-  const teams = groupByTeam(squad);
-  const total = teams.reduce((s, t) => s + t.logged, 0) || 1;
-  return (
-    <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #F0F1FA' }}>
-      <div style={{ fontSize: 10.5, letterSpacing: 0.6, color: '#6B7280', fontWeight: 700, marginBottom: 6 }}>
-        🏏 HOME vs AWAY
-      </div>
-      <div style={{ display: 'flex', height: 8, borderRadius: 5, overflow: 'hidden', background: '#F0F1FA' }}>
-        {teams.map((t) => (
-          <div key={t.team} style={{ width: `${(t.logged / total) * 100}%`, background: t.accent }} title={`${t.team}: ${t.logged}r`} />
-        ))}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 7, fontSize: 14, fontWeight: 800 }}>
-        {teams.map((t) => (
-          <span key={t.team} style={{ color: t.accent }}>{t.team} {t.logged}r</span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function InningsSplit({ squad, title = '🏏 Innings Split — Home vs Away', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
   const hasTeams = squad.length > 0 && squad.every((m) => !isNA(m.team));
   const totalLogged = squad.reduce((s, m) => s + m.loggedHours, 0) || 1;

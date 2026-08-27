@@ -191,6 +191,20 @@ export function deriveProject(project) {
     observedRunRate = !isNA(observedSpanDays) && observedSpanDays > 0 ? Math.round((completed / observedSpanDays) * 100) / 100 : NA;
   }
 
+  // Headline "total logged hours": Home + Away squad hours (`completed`,
+  // already the sum of every developer's logged hours split by team) plus
+  // the Design/QA/Delivery specialist hours from the Projects sheet's
+  // Actual_* columns — those three aren't tracked per-developer in the
+  // squad, so they'd otherwise be missing from the total entirely. Build
+  // Dev/Run Config/Run Dev are excluded here since that work is already
+  // counted inside `completed` via the squad's logged hours. Missing
+  // Design/QA/Delivery actuals count as 0 (not logged yet), not NA — the
+  // total should never go blank just because one category hasn't started.
+  const actualEffort = project.actualEffortSplit || {};
+  const PHASE_LOG_KEYS = ['design', 'qa', 'delivery'];
+  const phaseLoggedTotal = PHASE_LOG_KEYS.reduce((s, k) => s + (isNA(actualEffort[k]) ? 0 : actualEffort[k]), 0);
+  const totalLoggedHours = Math.round((completed + phaseLoggedTotal) * 100) / 100;
+
   // The definitive win/loss call for a delivered project: did it finish
   // within the hours actually budgeted? This is independent of the RR
   // comparison above (a project can land under budget even at a slightly
@@ -242,6 +256,7 @@ export function deriveProject(project) {
     ...project,
     completed,
     remaining,
+    totalLoggedHours,
     marginHours,
     progressPct,
     hoursProgressPct,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { isNA, NA } from '../lib/theme.js';
 import { fmtDate } from '../lib/derive.js';
-import { StatusBadge, NAValue } from '../components/Shared.jsx';
+import { StatusBadge, NAValue, TotalHoursDonut } from '../components/Shared.jsx';
 import InningsSplit from '../components/InningsSplit.jsx';
 
 const EFFORT_LABELS = [
@@ -12,6 +12,11 @@ const EFFORT_LABELS = [
   ['qa', 'QA', '#BDBEFA'],
   ['delivery', 'Delivery', '#DCDDFD'],
 ];
+
+// Shared ring size for the Effort Breakdown and Total Logged donuts so the two
+// sit side by side at the same scale and are easy to compare at a glance.
+const DONUT_SIZE = 150;
+const DONUT_HOLE = 23;
 
 const CHECKLIST_STATUS_STYLE = {
   done: { label: 'Done', fg: '#15803D', bg: '#E9F7EF' },
@@ -99,10 +104,10 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
         {hasSplit ? 'Planned runs (ring) · logged runs where tracked' : 'NA — needs effort-category runs per project'}
       </div>
       <div className="effort-row" style={{ display: 'flex', alignItems: 'center', gap: 22, marginTop: 18 }}>
-        <div className="effort-ring" style={{ position: 'relative', width: 124, height: 124, flex: '0 0 124px', borderRadius: '50%', background: gradient }}>
-          <div style={{ position: 'absolute', inset: 19, background: '#FFFFFF', borderRadius: '50%', display: 'grid', placeContent: 'center', textAlign: 'center' }}>
-            <div className="num" style={{ fontSize: 28, fontWeight: 700, lineHeight: 1 }}>{isNA(target) ? 'NA' : target}</div>
-            <div style={{ fontSize: 9, letterSpacing: 1, color: '#6B7280', fontWeight: 700 }}>PLANNED RUNS</div>
+        <div className="effort-ring" style={{ position: 'relative', width: DONUT_SIZE, height: DONUT_SIZE, flex: `0 0 ${DONUT_SIZE}px`, borderRadius: '50%', background: gradient }}>
+          <div style={{ position: 'absolute', inset: DONUT_HOLE, background: '#FFFFFF', borderRadius: '50%', display: 'grid', placeContent: 'center', textAlign: 'center' }}>
+            <div className="num" style={{ fontSize: DONUT_SIZE * 0.226, fontWeight: 700, lineHeight: 1 }}>{isNA(target) ? 'NA' : target}</div>
+            <div style={{ fontSize: DONUT_SIZE * 0.073, letterSpacing: 1, color: '#6B7280', fontWeight: 700 }}>PLANNED RUNS</div>
           </div>
         </div>
         <div className="effort-legend" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 9 }}>
@@ -136,27 +141,15 @@ function EffortDonut({ effortSplit, actualEffortSplit, target }) {
   );
 }
 
-function Milestones({ milestones, hasTasks }) {
+function TotalLoggedCard({ squad, actualEffortSplit }) {
   return (
     <div className="card" style={{ padding: '20px 22px' }}>
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-        <div style={{ fontSize: 13.5, fontWeight: 800 }}>Progress by Phase</div>
-        <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 600 }}>
-          {hasTasks ? '🏏 from the task checklist, grouped by auto-tagged phase' : isNA(milestones[0].pct) ? 'NA — needs target runs' : '🏏 marks a milestone reached (template weighting)'}
-        </div>
+      <div style={{ fontSize: 13.5, fontWeight: 800 }}>Total Logged Hours</div>
+      <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 500, marginTop: 3 }}>
+        Home + Away squad runs, plus Design/QA/Delivery — compare against the planned split on the left
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 13, marginTop: 18 }}>
-        {milestones.map((m) => (
-          <div key={m.label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 20, textAlign: 'center', fontSize: 12 }}>{m.marker}</div>
-            <div style={{ width: 108, fontSize: 11, fontWeight: 800, letterSpacing: 0.6, color: '#6B7280', textTransform: 'uppercase' }}>{m.label}</div>
-            <div className="progress-track">
-              {!isNA(m.pct) && <div className="progress-fill" style={{ width: `${m.pct}%`, background: m.color }} />}
-            </div>
-            <div style={{ width: 40, textAlign: 'right', fontSize: 12, fontWeight: 700 }}>{isNA(m.pct) ? <span className="na">NA</span> : `${m.pct}%`}</div>
-            {hasTasks && <div style={{ width: 46, textAlign: 'right', fontSize: 10.5, color: '#9CA3AF', fontWeight: 600 }}>{isNA(m.pct) ? '' : `${m.done}/${m.total}`}</div>}
-          </div>
-        ))}
+      <div style={{ marginTop: 18 }}>
+        <TotalHoursDonut squad={squad} actualEffortSplit={actualEffortSplit} size={DONUT_SIZE} hole={DONUT_HOLE} bordered={false} />
       </div>
     </div>
   );
@@ -255,9 +248,9 @@ export default function ProjectDetailPage({ project, onBack }) {
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 32, flexWrap: 'wrap' }}>
               <div>
                 <div className="scorecard-score">
-                  {p.completed} <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>RUNS</span>
+                  <NAValue value={p.totalLoggedHours} /> <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>RUNS</span>
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>RUNS LOGGED</div>
+                <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>TOTAL LOGGED · HOME+AWAY+DESIGN+QA+DELIVERY</div>
               </div>
               <div>
                 <div className="scorecard-score" style={{ opacity: 0.55 }}>
@@ -357,9 +350,9 @@ export default function ProjectDetailPage({ project, onBack }) {
         <ProgressTrend trend={p.progressTrend} />
       </section>
 
-      <section className="grid-2-uneven">
+      <section className="grid-2">
         <EffortDonut effortSplit={p.effortSplit} actualEffortSplit={p.actualEffortSplit} target={p.targetHours} />
-        <Milestones milestones={p.milestones} hasTasks={p.taskProgress?.hasTasks} />
+        <TotalLoggedCard squad={p.squad} actualEffortSplit={p.actualEffortSplit} />
       </section>
 
       <TaskChecklist taskProgress={p.taskProgress} taskList={p.taskList} />

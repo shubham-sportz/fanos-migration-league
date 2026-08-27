@@ -583,11 +583,13 @@ table.data-table {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 18px 20px;
+  padding: 22px 20px 26px;
   box-shadow: 0 1px 2px rgba(30, 30, 45, 0.04);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .project-card:hover {
@@ -693,7 +695,7 @@ table.data-table {
    so breakpoints below can collapse them consistently. */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -851,10 +853,6 @@ table.data-table {
 
   .scorecard-stat-value {
     font-size: 28px;
-  }
-
-  .project-card-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
   table.data-table {
