@@ -25,6 +25,7 @@ export function loadProjects() {
     // mentions, at 0h) so a developer still shows up in the squad even
     // before their hours are added to HoursOverride.
     const overrides = Object.entries(meta.actualHoursByDeveloper || {});
+    const hoursSource = meta.hoursSource || {};
     const hoursByName = { ...logged.developers };
     let hasOverride = false;
     overrides.forEach(([name, hours]) => {
@@ -39,7 +40,11 @@ export function loadProjects() {
         role: teamsByName[name]?.role || NA,
         team: teamsByName[name]?.team || NA,
         loggedHours: hours,
-        isManualOverride: overrides.some(([n]) => n === name),
+        // "Manual" = typed in by hand for work never logged against a
+        // ticket (see HoursOverride's Source column) — distinct from hours
+        // pulled from a Jira worklog sync, which aren't a manual override
+        // even though they live in the same HoursOverride sheet.
+        isManualOverride: hoursSource[name] === 'Manual',
       }));
     // completedHours counts only named-developer hours (HoursOverride/squad)
     // — actualEffortSplit is shown separately on the Effort Breakdown card as

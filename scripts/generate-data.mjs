@@ -96,14 +96,19 @@ sheet('Projects').forEach((r) => {
       delivery: orNA(r.Actual_Delivery),
     },
     actualHoursByDeveloper: {},
+    hoursSource: {},
     wickets: [],
   };
 });
 
 // --- HoursOverride ---
+// `Source` distinguishes hours pulled from a Jira worklog sync ("Jira")
+// from hours typed in by hand for work that was never logged against a
+// ticket ("Manual"); NA on older rows from before this column existed.
 sheet('HoursOverride').forEach((r) => {
   if (!projects[r.ProjectCode]) return;
   projects[r.ProjectCode].actualHoursByDeveloper[r.Developer] = r.Hours;
+  projects[r.ProjectCode].hoursSource[r.Developer] = orNA(r.Source);
 });
 
 // --- Wickets ---

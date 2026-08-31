@@ -418,7 +418,17 @@ export default function ProjectDetailPage({ project, onBack }) {
                   <div style={{ fontSize: 12.5, fontWeight: 700 }}>{m.name}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700 }}>{m.loggedHours}r logged</div>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>
+                    {m.loggedHours}r logged
+                    {m.isManualOverride && (
+                      <span
+                        title="Set manually in HoursOverride, not from a Jira worklog"
+                        style={{ marginLeft: 6, fontSize: 9.5, fontWeight: 800, letterSpacing: 0.3, color: '#B45309', background: '#FDF4E5', borderRadius: 6, padding: '2px 6px', verticalAlign: 'middle' }}
+                      >
+                        MANUAL
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

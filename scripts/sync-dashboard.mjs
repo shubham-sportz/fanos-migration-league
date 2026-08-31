@@ -117,9 +117,26 @@ wb.worksheets.forEach((ws) => {
   }
 });
 
-// 4. Hours — full replace, same as apply-jira-statuses' hours counterpart.
+// 4. Hours — replaces the Jira-sourced rows with fresh worklog totals, but
+// preserves any row marked Source=Manual (hand-typed hours for work never
+// logged against a ticket, e.g. Shubham/Mayur on WF) that the new payload
+// doesn't itself cover — otherwise a routine Jira sync would silently wipe
+// those out every time.
 if (Object.keys(hours).length) {
   const hoWs = wb.getWorksheet('HoursOverride');
+  if (!hoWs.getRow(1).getCell(4).value) hoWs.getRow(1).getCell(4).value = 'Source';
+
+  const preserved = [];
+  for (let r = 2; r <= hoWs.rowCount; r++) {
+    const row = hoWs.getRow(r);
+    const project = row.getCell(1).value;
+    const dev = row.getCell(2).value;
+    const source = row.getCell(4).value;
+    if (source === 'Manual' && !hours[project]?.[dev]) {
+      preserved.push({ project, dev, hoursValue: row.getCell(3).value });
+    }
+  }
+
   for (let r = hoWs.rowCount; r >= 2; r--) hoWs.spliceRows(r, 1);
   let r = 2;
   for (const [project, byDev] of Object.entries(hours)) {
@@ -127,9 +144,17 @@ if (Object.keys(hours).length) {
       hoWs.getRow(r).getCell(1).value = project;
       hoWs.getRow(r).getCell(2).value = dev;
       hoWs.getRow(r).getCell(3).value = h;
+      hoWs.getRow(r).getCell(4).value = 'Jira';
       r++;
     }
   }
+  preserved.forEach(({ project, dev, hoursValue }) => {
+    hoWs.getRow(r).getCell(1).value = project;
+    hoWs.getRow(r).getCell(2).value = dev;
+    hoWs.getRow(r).getCell(3).value = hoursValue;
+    hoWs.getRow(r).getCell(4).value = 'Manual';
+    r++;
+  });
 }
 
 await wb.xlsx.writeFile(XLSX_PATH);
