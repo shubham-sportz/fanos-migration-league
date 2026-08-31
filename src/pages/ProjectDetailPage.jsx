@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { isNA, NA } from '../lib/theme.js';
 import { fmtDate } from '../lib/derive.js';
 import { StatusBadge, NAValue, TotalHoursDonut } from '../components/Shared.jsx';
@@ -25,6 +25,14 @@ const CHECKLIST_STATUS_STYLE = {
 };
 
 function TaskChecklist({ taskProgress, taskList }) {
+  const [query, setQuery] = useState('');
+  const [developer, setDeveloper] = useState('all');
+
+  const developers = useMemo(
+    () => [...new Set(taskList.map((t) => t.developer).filter((d) => !isNA(d)))].sort((a, b) => a.localeCompare(b)),
+    [taskList]
+  );
+
   if (!taskProgress.hasTasks) {
     return (
       <section className="section" style={{ marginTop: 16 }}>
@@ -35,51 +43,87 @@ function TaskChecklist({ taskProgress, taskList }) {
   }
   const order = { done: 0, inprogress: 1, pending: 2 };
   const sorted = [...taskList].sort((a, b) => order[a.status] - order[b.status]);
+  const q = query.trim().toLowerCase();
+  const filtered = sorted.filter((t) => {
+    if (developer !== 'all' && t.developer !== developer) return false;
+    if (!q) return true;
+    return t.name.toLowerCase().includes(q) || (t.id && t.id.toLowerCase().includes(q));
+  });
+
+  const inputStyle = {
+    fontSize: 12.5, fontWeight: 600, padding: '7px 12px', borderRadius: 10,
+    border: '1px solid #E0E0EC', background: '#FFFFFF', color: '#1E1E2D', outline: 'none',
+  };
+
   return (
     <section className="section" style={{ marginTop: 16 }}>
-      <div className="section-head">
+      <div className="section-head" style={{ flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div className="section-head-title">Task Checklist</div>
           <div className="section-head-sub">
             {taskProgress.done} done · {taskProgress.inProgress} in progress · {taskProgress.pending} pending · {taskProgress.total} total — drives the {taskProgress.pct}% complete above
           </div>
         </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search tasks…"
+            style={{ ...inputStyle, width: 180 }}
+          />
+          <select value={developer} onChange={(e) => setDeveloper(e.target.value)} style={{ ...inputStyle, width: 150 }}>
+            <option value="all">All developers</option>
+            {developers.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div className="checklist-grid">
-        {sorted.map((t, i) => {
-          const s = CHECKLIST_STATUS_STYLE[t.status] || CHECKLIST_STATUS_STYLE.pending;
-          const statusLabel = !isNA(t.jiraStatus) ? t.jiraStatus : s.label;
-          return (
-            <div
-              key={t.id || `${t.name}-${i}`}
-              title={t.id ? `${t.name} ${t.id}` : t.name}
-              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 22px', background: '#FFFFFF' }}
-            >
-              <span className="badge" style={{ background: s.bg, color: s.fg, flex: '0 0 auto' }}>
-                <span className="badge-dot" style={{ background: s.fg }} />
-                {statusLabel}
-              </span>
-              <span style={{ fontSize: 12.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {!isNA(t.url) ? (
-                  <a
-                    href={t.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ color: 'inherit', textDecoration: 'none' }}
-                  >
-                    {t.name} {t.id && <span style={{ color: '#2A2AEA', fontWeight: 600, textDecoration: 'underline' }}>{t.id}</span>}
-                  </a>
-                ) : (
-                  <>
-                    {t.name} {t.id && <span style={{ color: '#9CA3AF', fontWeight: 600 }}>{t.id}</span>}
-                  </>
+      {filtered.length === 0 ? (
+        <div className="na" style={{ padding: 22 }}>No tasks match your search/filter.</div>
+      ) : (
+        <div className="checklist-grid">
+          {filtered.map((t, i) => {
+            const s = CHECKLIST_STATUS_STYLE[t.status] || CHECKLIST_STATUS_STYLE.pending;
+            const statusLabel = !isNA(t.jiraStatus) ? t.jiraStatus : s.label;
+            return (
+              <div
+                key={t.id || `${t.name}-${i}`}
+                title={t.id ? `${t.name} ${t.id}` : t.name}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 22px', background: '#FFFFFF' }}
+              >
+                <span className="badge" style={{ background: s.bg, color: s.fg, flex: '0 0 auto' }}>
+                  <span className="badge-dot" style={{ background: s.fg }} />
+                  {statusLabel}
+                </span>
+                <span style={{ fontSize: 12.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
+                  {!isNA(t.url) ? (
+                    <a
+                      href={t.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                    >
+                      {t.name} {t.id && <span style={{ color: '#2A2AEA', fontWeight: 600, textDecoration: 'underline' }}>{t.id}</span>}
+                    </a>
+                  ) : (
+                    <>
+                      {t.name} {t.id && <span style={{ color: '#9CA3AF', fontWeight: 600 }}>{t.id}</span>}
+                    </>
+                  )}
+                </span>
+                {!isNA(t.developer) && (
+                  <span style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', background: '#F3F4F6', borderRadius: 8, padding: '3px 8px', flex: '0 0 auto', whiteSpace: 'nowrap' }}>
+                    {t.developer}
+                  </span>
                 )}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

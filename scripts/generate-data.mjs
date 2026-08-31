@@ -151,6 +151,7 @@ Object.keys(projects).forEach((code) => {
         id,
         url: id ? `${TICKET_BASE}${id}` : NA,
         name: r.TaskName,
+        developer: orNA(r.Developer),
         status: r.Status,
         // The exact Jira workflow state (e.g. "In QA", "Ready for Prod"),
         // kept separate from `status` above — that stays the coarse
