@@ -113,3 +113,29 @@ and gitignored. It runs automatically before `pnpm dev` and `pnpm build`
 The legacy Claude Design export (`Delivery Dashboard.dc.html`, `support.js`,
 `assets/`) is kept at the repo root for reference and is no longer used by
 the app.
+
+### Syncing from the Google Sheet
+
+`pnpm sync-sheet` (`scripts/sync-from-sheet.mjs`) rebuilds `FML-Data.xlsx`
+from the team's Google Sheet, then regenerates `src/data/generated.json`
+(same as `pnpm data:build`) so the dashboard reflects the new data
+immediately — no separate `pnpm dev` restart needed.
+
+### Syncing Jira statuses
+
+There's no Jira API token wired into the scripts — instead, **ask Claude to
+"sync Jira statuses"** (with a Claude session that has Jira connected). It
+will:
+
+1. Look up every task row with a `TaskID` (across all project sheets) and
+   fetch that issue's current status from Jira (project `FNS`), mapped to
+   `done` / `inprogress` / `pending` via Jira's status category.
+2. Write the resulting `{TaskID: status}` map to a temp JSON file and run
+   `pnpm apply-jira-statuses <that file>` (`scripts/apply-jira-statuses.mjs`),
+   which overwrites the `Status` cell for each matched row in
+   `FML-Data.xlsx` and regenerates `generated.json`.
+
+Jira is treated as the source of truth for any task that has a ticket — a
+task's `Status` cell in the sheet only matters once it has no `TaskID`. Run
+`pnpm sync-sheet` first if you also want the latest task list/names from the
+Google Sheet before the Jira statuses are layered on top.

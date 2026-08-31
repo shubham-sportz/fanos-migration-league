@@ -138,4 +138,10 @@ PROJECT_CODES.forEach((code) => {
 
 await wb.xlsx.writeFile(XLSX_PATH);
 console.log(`\nRebuilt ${XLSX_PATH} from the Google Sheet.`);
-console.log('Run `pnpm dev` or `pnpm build` to regenerate generated.json from it.');
+
+console.log('Regenerating dashboard data...');
+await import('./generate-data.mjs');
+
+console.log('\nTip: ask Claude to "sync Jira statuses" to pull live ticket');
+console.log('statuses on top of this (see README) — it uses its connected');
+console.log('Jira access, no API token needed.');
