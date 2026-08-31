@@ -73,7 +73,7 @@ function TaskChecklist({ taskProgress, taskList }) {
             style={{ ...inputStyle, width: 180 }}
           />
           <select value={developer} onChange={(e) => setDeveloper(e.target.value)} style={{ ...inputStyle, width: 150 }}>
-            <option value="all">All developers</option>
+            <option value="all">All players</option>
             {developers.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
