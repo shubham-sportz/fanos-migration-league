@@ -36,7 +36,7 @@ export function loadProjects() {
       .sort((a, b) => b[1] - a[1])
       .map(([name, hours]) => ({
         name,
-        role: NA,
+        role: teamsByName[name]?.role || NA,
         team: teamsByName[name]?.team || NA,
         loggedHours: hours,
         isManualOverride: overrides.some(([n]) => n === name),

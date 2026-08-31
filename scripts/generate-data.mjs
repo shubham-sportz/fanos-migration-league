@@ -64,7 +64,7 @@ const CAPACITY_HOURS_PER_DAY = 8;
 // --- Developers ---
 const developers = {};
 sheet('Developers').forEach((r) => {
-  developers[r.Name] = { team: orNA(r.Team) };
+  developers[r.Name] = { team: orNA(r.Team), role: orNA(r.Role) };
 });
 
 // --- Projects (planned + actual effort split) ---

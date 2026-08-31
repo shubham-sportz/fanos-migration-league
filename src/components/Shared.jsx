@@ -98,10 +98,18 @@ const TOTAL_HOURS_SEGMENTS = [
   ['delivery', 'Delivery', '#15803D'],
 ];
 
+// A squad member's individual discipline (e.g. QA, Design) takes priority
+// over their Home/Away team bucket — someone testing full-time shouldn't
+// have their hours read as generic build/run work just because they're on
+// the Home team roster.
+const ROLE_TO_BUCKET = { qa: 'qa', design: 'design', delivery: 'delivery' };
+
 export function TotalHoursDonut({ squad, actualEffortSplit, compact = false, size, hole, bordered = true }) {
   const values = (squad || []).reduce(
     (acc, m) => {
-      if (m.team === 'Home') acc.home += m.loggedHours;
+      const roleBucket = !isNA(m.role) && ROLE_TO_BUCKET[m.role.toLowerCase()];
+      if (roleBucket) acc[roleBucket] += m.loggedHours;
+      else if (m.team === 'Home') acc.home += m.loggedHours;
       else if (m.team === 'Away') acc.away += m.loggedHours;
       return acc;
     },
