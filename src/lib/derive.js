@@ -84,10 +84,38 @@ export function computeMilestonesFromTasks(taskList) {
   });
 }
 
+// How far along each exact Jira workflow status counts a task as being —
+// e.g. a task sitting in QA is most of the way done, not 0%, so overall
+// project % complete moves as tickets progress through the pipeline instead
+// of jumping only when a ticket is fully closed. Falls back to a coarser
+// per-bucket weight (see FALLBACK_STATUS_WEIGHT below) for a task with no
+// ticket (no jiraStatus) or a Jira status text not listed here.
+export const JIRA_STATUS_WEIGHT = {
+  'To Do': 0,
+  Pending: 0,
+  Rejected: 0,
+  'Need Clarification': 10,
+  'In Dev': 40,
+  'Code Review': 60,
+  'Ready for QA': 75,
+  'In QA': 90,
+  'Ready for Prod': 95,
+  Done: 100,
+};
+const FALLBACK_STATUS_WEIGHT = { done: 100, inprogress: 50, pending: 0 };
+
+function taskWeight(t) {
+  if (!isNA(t.jiraStatus) && t.jiraStatus in JIRA_STATUS_WEIGHT) return JIRA_STATUS_WEIGHT[t.jiraStatus];
+  return FALLBACK_STATUS_WEIGHT[t.status] ?? 0;
+}
+
 /**
- * Project completion, from the master task checklist: done tasks ÷ total
- * tasks. This is now the primary "% complete" for a project — hours stay
- * tracked separately as a budget metric (see marginHours/requiredRR below).
+ * Project completion, from the master task checklist. Each task contributes
+ * its Jira status weight (see JIRA_STATUS_WEIGHT) toward the overall %, so a
+ * project with every task sitting "In QA" reads as ~90% rather than 0% —
+ * hours stay tracked separately as a budget metric (see marginHours/requiredRR
+ * below). `done`/`inProgress`/`pending` below stay the coarse counts (used
+ * for the checklist's "x done · y in progress · z pending" summary line).
  */
 export function computeTaskProgress(taskList) {
   const total = (taskList || []).length;
@@ -97,7 +125,8 @@ export function computeTaskProgress(taskList) {
   const done = taskList.filter((t) => t.status === 'done').length;
   const inProgress = taskList.filter((t) => t.status === 'inprogress').length;
   const pending = taskList.filter((t) => t.status === 'pending').length;
-  return { hasTasks: true, total, done, inProgress, pending, pct: Math.round((done / total) * 100) };
+  const pct = Math.round(taskList.reduce((sum, t) => sum + taskWeight(t), 0) / total);
+  return { hasTasks: true, total, done, inProgress, pending, pct };
 }
 
 const dayDiff = (a, b) => Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
