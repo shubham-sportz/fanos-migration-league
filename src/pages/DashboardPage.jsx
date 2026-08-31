@@ -13,7 +13,7 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
   const aggregatedSquad = Object.values(
     projects.reduce((byName, p) => {
       p.squad.forEach((m) => {
-        if (!byName[m.name]) byName[m.name] = { name: m.name, team: m.team, loggedHours: 0 };
+        if (!byName[m.name]) byName[m.name] = { name: m.name, team: m.team, role: m.role, loggedHours: 0 };
         byName[m.name].loggedHours = round1(byName[m.name].loggedHours + m.loggedHours);
       });
       return byName;

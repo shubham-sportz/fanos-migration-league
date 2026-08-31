@@ -4,32 +4,46 @@ import { isNA, round1 } from '../lib/theme.js';
 const TEAM_STYLE = {
   'Home': { accent: '#2A2AEA', track: '#EFEFFF' },
   'Away': { accent: '#F97316', track: '#FFF1E7' },
+  'Support Staff': { accent: '#7C3AED', track: '#F3EEFF' },
 };
+const GROUP_ORDER = { Home: 0, Away: 1, 'Support Staff': 2 };
+
+// Designers, testers, and delivery folks are grouped as Support Staff
+// regardless of their Home/Away team — that split is Run Team vs Build
+// Team, a separate axis from discipline (see TotalHoursDonut for the same
+// role-first rule applied to the hours-by-discipline donut).
+const SUPPORT_ROLES = new Set(['qa', 'design', 'delivery']);
+function resolveGroup(m) {
+  if (!isNA(m.role) && SUPPORT_ROLES.has(m.role.toLowerCase())) return 'Support Staff';
+  if (!isNA(m.team)) return m.team;
+  return null;
+}
 
 /**
- * Groups a squad (array of { name, team, loggedHours }) into Home /
- * Away. Works for a single project's squad or a pre-merged,
- * cross-project aggregate (see DashboardPage, which sums each developer's
- * hours across every project before passing the list in here).
+ * Groups a squad (array of { name, team, role, loggedHours }) into Home /
+ * Away / Support Staff. Works for a single project's squad or a
+ * pre-merged, cross-project aggregate (see DashboardPage, which sums each
+ * developer's hours across every project before passing the list in here).
  */
 function groupByTeam(squad) {
-  const byTeam = {};
+  const byGroup = {};
   squad.forEach((m) => {
-    if (isNA(m.team)) return;
-    (byTeam[m.team] = byTeam[m.team] || []).push(m);
+    const group = resolveGroup(m);
+    if (!group) return;
+    (byGroup[group] = byGroup[group] || []).push(m);
   });
-  return Object.entries(byTeam)
-    .sort(([a], [b]) => (a === 'Home' ? -1 : b === 'Home' ? 1 : 0))
-    .map(([team, members]) => {
+  return Object.entries(byGroup)
+    .sort(([a], [b]) => (GROUP_ORDER[a] ?? 99) - (GROUP_ORDER[b] ?? 99))
+    .map(([group, members]) => {
       const sorted = [...members].sort((a, b) => b.loggedHours - a.loggedHours);
       const logged = round1(sorted.reduce((s, m) => s + m.loggedHours, 0));
-      const style = TEAM_STYLE[team] || { accent: '#6B7280', track: '#F3F4F6' };
-      return { team, members: sorted, logged, ...style };
+      const style = TEAM_STYLE[group] || { accent: '#6B7280', track: '#F3F4F6' };
+      return { team: group, members: sorted, logged, ...style };
     });
 }
 
 export default function InningsSplit({ squad, title = '🏏 Innings Split — Home vs Away', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
-  const hasTeams = squad.length > 0 && squad.every((m) => !isNA(m.team));
+  const hasTeams = squad.length > 0 && squad.every((m) => resolveGroup(m) !== null);
   const totalLogged = round1(squad.reduce((s, m) => s + m.loggedHours, 0)) || 1;
 
   return (
