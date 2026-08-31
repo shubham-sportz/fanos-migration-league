@@ -121,35 +121,35 @@ from the team's Google Sheet, then regenerates `src/data/generated.json`
 (same as `pnpm data:build`) so the dashboard reflects the new data
 immediately — no separate `pnpm dev` restart needed.
 
-### Syncing Jira statuses
+### Syncing the dashboard from Jira
 
 There's no Jira API token wired into the scripts — instead, **ask Claude to
-"sync Jira statuses"** (with a Claude session that has Jira connected). It
-will:
+"update the dashboard"** (with a Claude session that has Jira connected).
+One request covers everything below; you don't need to ask for each piece
+separately, and Claude will ask before adding anything you didn't
+explicitly request (a new task row, a new developer):
 
-1. Look up every task row with a `TaskID` (across all project sheets) and
-   fetch that issue's current status from Jira (project `FNS`) — both the
-   coarse `done` / `inprogress` / `pending` bucket (from Jira's status
-   category, drives % complete math) and the exact status text (e.g.
-   "In QA", "Ready for Prod" — shown verbatim on the checklist badge).
-2. Write the resulting `{TaskID: {status, jiraStatus}}` map to a temp JSON
-   file and run `pnpm apply-jira-statuses <that file>`
-   (`scripts/apply-jira-statuses.mjs`), which overwrites the `Status` and
-   `JiraStatus` cells for each matched row in `FML-Data.xlsx` and
-   regenerates `generated.json`.
+- **Ticket statuses** — every task row with a `TaskID` gets Jira's current
+  status, both the coarse `done` / `inprogress` / `pending` bucket (from
+  Jira's status category, drives % complete math) and the exact status text
+  (e.g. "In QA", "Ready for Prod" — shown verbatim on the checklist badge).
+- **Hours** — `HoursOverride` is fully replaced with hours aggregated from
+  each ticket's Jira worklog entries, grouped by developer and by which
+  project the ticket's `TaskID` belongs to.
+- **New tasks you mention** — tell Claude about a new ticket (e.g. paste a
+  Jira URL) and it adds it as a task row with the right project/status.
+- **New developers surfaced by worklogs** — someone logging time who isn't
+  in `Developers` yet gets added (Claude will ask which team, Home or Away
+  — the Innings Split needs every squad member's team resolved to render).
+
+Under the hood this is one script — `pnpm sync-dashboard <payload.json>`
+(`scripts/sync-dashboard.mjs`), given a JSON payload with `statuses`,
+`hours`, `newTasks`, and `newDevelopers` sections (any can be omitted) —
+that applies everything to `FML-Data.xlsx` in a single write and
+regenerates `generated.json` once. Claude builds that payload from Jira; the
+command isn't meant to be run by hand.
 
 Jira is treated as the source of truth for any task that has a ticket — a
 task's `Status` cell in the sheet only matters once it has no `TaskID`. Run
 `pnpm sync-sheet` first if you also want the latest task list/names from the
-Google Sheet before the Jira statuses are layered on top.
-
-### Syncing hours from Jira worklogs
-
-Similarly, **ask Claude to "sync hours from Jira worklogs"** to refresh
-`HoursOverride` — the sheet is fully replaced (not merged) with hours
-aggregated from each ticket's logged work, grouped by developer and by
-which project the ticket's `TaskID` belongs to. A worklog author not
-already in `Developers` gets added there too (ask which team to assign
-them to — the Innings Split needs every squad member's team resolved to
-render). Any ticket with real logged work but no existing task row should
-get added as one first, or its hours won't be attributed to a project.
+Google Sheet before Jira data is layered on top.

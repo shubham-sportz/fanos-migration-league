@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "data:build": "node scripts/generate-data.mjs",
     "sync-sheet": "node scripts/sync-from-sheet.mjs",
-    "apply-jira-statuses": "node scripts/apply-jira-statuses.mjs"
+    "sync-dashboard": "node scripts/sync-dashboard.mjs"
   },
   "dependencies": {
     "papaparse": "^5.4.1",
