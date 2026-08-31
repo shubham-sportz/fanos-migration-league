@@ -34,7 +34,7 @@ const PROJECT_CODES = ['WF', 'SO', 'PVL', 'MCFC'];
 const TABLE_HEADERS = [
   'Date', 'Developer', 'ProjectCode', 'TaskID', 'TaskName', 'Est hours',
   'Status', 'comments', 'planned start date', 'planned end date',
-  'Actual start date', 'Actual end date',
+  'Actual start date', 'Actual end date', 'JiraStatus',
 ];
 const DEVELOPER_COL = 2;
 const STATUS_COL = 7;

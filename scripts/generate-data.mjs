@@ -152,6 +152,12 @@ Object.keys(projects).forEach((code) => {
         url: id ? `${TICKET_BASE}${id}` : NA,
         name: r.TaskName,
         status: r.Status,
+        // The exact Jira workflow state (e.g. "In QA", "Ready for Prod"),
+        // kept separate from `status` above — that stays the coarse
+        // done/inprogress/pending bucket the rest of the app's math
+        // (% complete, run rate) is built on. NA for tasks with no ticket,
+        // or before a Jira sync has ever populated this column.
+        jiraStatus: orNA(r.JiraStatus),
         plannedStart: dateOrNA(r['planned start date']),
         plannedEnd: dateOrNA(r['planned end date']),
         actualStart: dateOrNA(r['Actual start date']),

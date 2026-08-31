@@ -48,6 +48,7 @@ function TaskChecklist({ taskProgress, taskList }) {
       <div className="checklist-grid">
         {sorted.map((t, i) => {
           const s = CHECKLIST_STATUS_STYLE[t.status] || CHECKLIST_STATUS_STYLE.pending;
+          const statusLabel = !isNA(t.jiraStatus) ? t.jiraStatus : s.label;
           return (
             <div
               key={t.id || `${t.name}-${i}`}
@@ -56,7 +57,7 @@ function TaskChecklist({ taskProgress, taskList }) {
             >
               <span className="badge" style={{ background: s.bg, color: s.fg, flex: '0 0 auto' }}>
                 <span className="badge-dot" style={{ background: s.fg }} />
-                {s.label}
+                {statusLabel}
               </span>
               <span style={{ fontSize: 12.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {!isNA(t.url) ? (
