@@ -1,5 +1,5 @@
 import React from 'react';
-import { isNA } from '../lib/theme.js';
+import { isNA, round1 } from '../lib/theme.js';
 
 const TEAM_STYLE = {
   'Home': { accent: '#2A2AEA', track: '#EFEFFF' },
@@ -22,7 +22,7 @@ function groupByTeam(squad) {
     .sort(([a], [b]) => (a === 'Home' ? -1 : b === 'Home' ? 1 : 0))
     .map(([team, members]) => {
       const sorted = [...members].sort((a, b) => b.loggedHours - a.loggedHours);
-      const logged = sorted.reduce((s, m) => s + m.loggedHours, 0);
+      const logged = round1(sorted.reduce((s, m) => s + m.loggedHours, 0));
       const style = TEAM_STYLE[team] || { accent: '#6B7280', track: '#F3F4F6' };
       return { team, members: sorted, logged, ...style };
     });
@@ -30,7 +30,7 @@ function groupByTeam(squad) {
 
 export default function InningsSplit({ squad, title = '🏏 Innings Split — Home vs Away', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
   const hasTeams = squad.length > 0 && squad.every((m) => !isNA(m.team));
-  const totalLogged = squad.reduce((s, m) => s + m.loggedHours, 0) || 1;
+  const totalLogged = round1(squad.reduce((s, m) => s + m.loggedHours, 0)) || 1;
 
   return (
     <section style={{ marginTop: 16, position: 'relative', background: '#FFFFFF', border: '1px solid #E8E8F2', borderRadius: 18, boxShadow: '0 1px 2px rgba(30,30,45,0.04)', overflow: 'hidden' }}>

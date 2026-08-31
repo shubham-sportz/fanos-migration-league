@@ -23,6 +23,12 @@ export const NA = 'NA';
 
 export const isNA = (v) => v === null || v === undefined || v === NA || v === '';
 
+// Hours can now come in as decimals (e.g. from Jira worklogs), so summing
+// several of them can produce floating-point noise (15.8 + 17.1 =
+// 32.900000000000006) — round to 1 decimal wherever hours are accumulated
+// or displayed.
+export const round1 = (n) => Math.round(n * 10) / 10;
+
 export const STATUS_META = {
   won: { label: 'Won', fg: COLORS.ok, bg: COLORS.okBg },
   late: { label: 'Late', fg: COLORS.warn, bg: COLORS.warnBg },

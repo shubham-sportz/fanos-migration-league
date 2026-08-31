@@ -1,5 +1,5 @@
 import React from 'react';
-import { isNA } from '../lib/theme.js';
+import { isNA, round1 } from '../lib/theme.js';
 import { KpiCard } from '../components/Shared.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import InningsSplit from '../components/InningsSplit.jsx';
@@ -14,7 +14,7 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
     projects.reduce((byName, p) => {
       p.squad.forEach((m) => {
         if (!byName[m.name]) byName[m.name] = { name: m.name, team: m.team, loggedHours: 0 };
-        byName[m.name].loggedHours += m.loggedHours;
+        byName[m.name].loggedHours = round1(byName[m.name].loggedHours + m.loggedHours);
       });
       return byName;
     }, {})

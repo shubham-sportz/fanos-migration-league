@@ -1,5 +1,5 @@
 import generated from './generated.json';
-import { NA } from '../lib/theme.js';
+import { NA, round1 } from '../lib/theme.js';
 
 const { projects: projectData, tasks: taskData, timesheet, developers, capacityHoursPerDay } = generated;
 
@@ -44,7 +44,7 @@ export function loadProjects() {
     // completedHours counts only named-developer hours (HoursOverride/squad)
     // — actualEffortSplit is shown separately on the Effort Breakdown card as
     // a planned-vs-actual comparison, but no longer added into the total.
-    const completedHours = squad.reduce((s, m) => s + m.loggedHours, 0);
+    const completedHours = round1(squad.reduce((s, m) => s + m.loggedHours, 0));
 
     return {
       code,
