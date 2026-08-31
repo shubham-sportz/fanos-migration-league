@@ -128,14 +128,28 @@ There's no Jira API token wired into the scripts — instead, **ask Claude to
 will:
 
 1. Look up every task row with a `TaskID` (across all project sheets) and
-   fetch that issue's current status from Jira (project `FNS`), mapped to
-   `done` / `inprogress` / `pending` via Jira's status category.
-2. Write the resulting `{TaskID: status}` map to a temp JSON file and run
-   `pnpm apply-jira-statuses <that file>` (`scripts/apply-jira-statuses.mjs`),
-   which overwrites the `Status` cell for each matched row in
-   `FML-Data.xlsx` and regenerates `generated.json`.
+   fetch that issue's current status from Jira (project `FNS`) — both the
+   coarse `done` / `inprogress` / `pending` bucket (from Jira's status
+   category, drives % complete math) and the exact status text (e.g.
+   "In QA", "Ready for Prod" — shown verbatim on the checklist badge).
+2. Write the resulting `{TaskID: {status, jiraStatus}}` map to a temp JSON
+   file and run `pnpm apply-jira-statuses <that file>`
+   (`scripts/apply-jira-statuses.mjs`), which overwrites the `Status` and
+   `JiraStatus` cells for each matched row in `FML-Data.xlsx` and
+   regenerates `generated.json`.
 
 Jira is treated as the source of truth for any task that has a ticket — a
 task's `Status` cell in the sheet only matters once it has no `TaskID`. Run
 `pnpm sync-sheet` first if you also want the latest task list/names from the
 Google Sheet before the Jira statuses are layered on top.
+
+### Syncing hours from Jira worklogs
+
+Similarly, **ask Claude to "sync hours from Jira worklogs"** to refresh
+`HoursOverride` — the sheet is fully replaced (not merged) with hours
+aggregated from each ticket's logged work, grouped by developer and by
+which project the ticket's `TaskID` belongs to. A worklog author not
+already in `Developers` gets added there too (ask which team to assign
+them to — the Innings Split needs every squad member's team resolved to
+render). Any ticket with real logged work but no existing task row should
+get added as one first, or its hours won't be attributed to a project.
