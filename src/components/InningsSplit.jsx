@@ -42,7 +42,7 @@ function groupByTeam(squad) {
     });
 }
 
-export default function InningsSplit({ squad, title = '🏏 Innings Split — Home vs Away', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
+export default function InningsSplit({ squad, title = '🏏 Innings Split', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
   const hasTeams = squad.length > 0 && squad.every((m) => resolveGroup(m) !== null);
   const totalLogged = round1(squad.reduce((s, m) => s + m.loggedHours, 0)) || 1;
 

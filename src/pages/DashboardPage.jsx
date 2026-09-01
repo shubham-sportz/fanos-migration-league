@@ -93,7 +93,7 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
 
       <InningsSplit
         squad={aggregatedSquad}
-        title="🏏 All Matches Innings Split — Home vs Away"
+        title="🏏 All Matches Innings Split "
         subtitle="Total runs logged across all matches, grouped by assigned team"
       />
 
