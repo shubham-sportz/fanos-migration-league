@@ -1,4 +1,4 @@
-import { isNA, NA, STATUS_META } from './theme.js';
+import { isNA, NA, STATUS_META, round1 } from './theme.js';
 
 export const TODAY = new Date('2026-08-24T00:00:00');
 
@@ -158,6 +158,16 @@ export function deriveProject(project) {
 
   const completed = project.completedHours;
   const remaining = hasTarget ? Math.max(0, project.targetHours - completed) : NA;
+
+  // Run rate's pace target (rrTargetHours below) is scoped to Build Dev +
+  // Run Dev + QA only — Design-role squad hours aren't part of that budget,
+  // so they're excluded here too; otherwise a Design contributor's logged
+  // hours would inflate the observed pace against a target that never
+  // included them. Falls back to `completed` (all roles) if squad data isn't
+  // available for some reason.
+  const devQaCompleted = Array.isArray(project.squad)
+    ? round1(project.squad.filter((m) => m.role !== 'Design').reduce((s, m) => s + m.loggedHours, 0))
+    : completed;
   const hoursProgressPct = hasTarget ? Math.round((completed / project.targetHours) * 100) : NA;
 
   // Completion is driven by the master task checklist (done ÷ total tasks),
@@ -199,7 +209,7 @@ export function deriveProject(project) {
     : NA;
   const rrTargetHours = !isNA(devQaTargetHours) ? devQaTargetHours : project.targetHours;
   const hasRRTarget = !isNA(rrTargetHours) && rrTargetHours > 0;
-  const rrRemaining = hasRRTarget ? Math.max(0, rrTargetHours - completed) : NA;
+  const rrRemaining = hasRRTarget ? Math.max(0, rrTargetHours - devQaCompleted) : NA;
 
   const rrUnit = 'runs/over';
   let requiredRR, observedRunRate;
@@ -209,7 +219,7 @@ export function deriveProject(project) {
     // hours over the whole planned window) against the pace actually
     // achieved over the real time it took.
     requiredRR = hasRRTarget && !isNA(plannedDurationDays) ? Math.round((rrTargetHours / plannedDurationDays) * 100) / 100 : NA;
-    observedRunRate = !isNA(actualDurationDays) ? Math.round((completed / actualDurationDays) * 100) / 100 : NA;
+    observedRunRate = !isNA(actualDurationDays) ? Math.round((devQaCompleted / actualDurationDays) * 100) / 100 : NA;
   } else {
     // In-flight: the live "required rate from here" (cricket RRR-style),
     // and the pace observed so far across the days work has actually been
@@ -217,7 +227,7 @@ export function deriveProject(project) {
     requiredRR = hasRRTarget && hasEnd && daysLeft > 0 ? rrRemaining / daysLeft : NA;
     const observedSpanDays =
       project.firstLoggedDate && project.lastLoggedDate ? Math.max(1, dayDiff(project.firstLoggedDate, project.lastLoggedDate) + 1) : NA;
-    observedRunRate = !isNA(observedSpanDays) && observedSpanDays > 0 ? Math.round((completed / observedSpanDays) * 100) / 100 : NA;
+    observedRunRate = !isNA(observedSpanDays) && observedSpanDays > 0 ? Math.round((devQaCompleted / observedSpanDays) * 100) / 100 : NA;
   }
 
   // Headline "total logged hours": Home + Away squad hours (`completed`,
