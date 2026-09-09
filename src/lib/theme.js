@@ -40,4 +40,6 @@ export const STATUS_META = {
   upcoming: { label: 'Upcoming', fg: COLORS.grey, bg: COLORS.greyBg },
   blocked: { label: 'Blocked', fg: COLORS.block, bg: COLORS.blockBg },
   pending: { label: 'Data pending', fg: COLORS.grey, bg: COLORS.greyBg },
+  testing: { label: 'In testing', fg: COLORS.primary, bg: '#EFEFFF' },
+  onHold: { label: 'On hold', fg: COLORS.grey, bg: COLORS.greyBg },
 };
