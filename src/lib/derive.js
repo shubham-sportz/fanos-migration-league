@@ -1,6 +1,7 @@
 import { isNA, NA, STATUS_META, round1 } from './theme.js';
 
-export const TODAY = new Date('2026-08-24T00:00:00');
+export const TODAY = new Date('2026-09-09T00:00:00');
+const TODAY_ISO = '2026-09-09';
 
 // Standard delivery-phase weighting used by the original Claude Design mock
 // to turn one overall progress % into per-phase milestone bars. It is a
@@ -177,7 +178,7 @@ export function deriveProject(project) {
   const taskProgress = computeTaskProgress(project.taskList);
   const progressPct = taskProgress.hasTasks ? taskProgress.pct : hoursProgressPct;
 
-  const daysLeft = hasEnd ? Math.max(0, dayDiff('2026-08-24', project.endDate)) : NA;
+  const daysLeft = hasEnd ? Math.max(0, dayDiff(TODAY_ISO, project.endDate)) : NA;
   const notStarted = hasStart ? new Date(project.startDate + 'T00:00:00') > TODAY : false;
 
   const hasWickets = (project.wickets || []).length > 0;
@@ -262,7 +263,7 @@ export function deriveProject(project) {
     // In-flight, with a real task checklist: compare tasks actually done
     // against how far through the planned schedule we are today — a
     // task-based stand-in for "are we ahead of or behind where we should be."
-    const elapsedDays = Math.max(0, Math.min(plannedDurationDays, dayDiff(project.startDate, '2026-08-24') + 1));
+    const elapsedDays = Math.max(0, Math.min(plannedDurationDays, dayDiff(project.startDate, TODAY_ISO) + 1));
     const expectedPct = plannedDurationDays > 0 ? (elapsedDays / plannedDurationDays) * 100 : 0;
     const ratio = expectedPct > 0 ? taskProgress.pct / expectedPct : 2;
     if (ratio >= 1) status = 'onTrack';
