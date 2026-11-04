@@ -138,7 +138,11 @@ Object.keys(projects).forEach((code) => {
   // Each project sheet is an Excel Table with a couple hundred blank rows
   // left below the real data for future entries — skip those until a
   // developer name is actually filled in.
-  const rows = sheet(code).filter((r) => r.Developer && r.Developer !== 'NA');
+  // A row counts if it has a developer OR a task name — Jira stories that
+  // nobody has picked up yet are real tasks (they affect % complete) even
+  // though they have no developer to credit in the squad.
+  const hasDev = (r) => r.Developer && r.Developer !== 'NA';
+  const rows = sheet(code).filter((r) => hasDev(r) || (r.TaskName && r.TaskName !== 'NA'));
 
   const taskList = [];
   const seen = new Set();
@@ -175,7 +179,7 @@ Object.keys(projects).forEach((code) => {
     // HoursOverride in loadProjects.js. Leaving this at 0 means "mentioned in
     // the sheet but no hours override supplied yet" rather than dropping the
     // person from the squad entirely.
-    if (!(r.Developer in p.developers)) p.developers[r.Developer] = 0;
+    if (hasDev(r) && !(r.Developer in p.developers)) p.developers[r.Developer] = 0;
     const dateISO = dateOrNA(r.Date);
     const text = r.TaskID && r.TaskID !== 'NA' ? `${r.TaskName} [${r.TaskID}]` : String(r.TaskName);
     p.tasks.push({ dev: r.Developer, date: dateISO, startDate: dateISO, endDate: dateISO, text, hours: 0 });

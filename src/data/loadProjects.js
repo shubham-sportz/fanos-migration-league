@@ -53,7 +53,9 @@ export function loadProjects() {
 
     return {
       code,
-      client: meta.client,
+      // Client name is NA for projects whose client hasn't been filled in yet —
+      // fall back to the project code so cards/titles stay distinguishable.
+      client: meta.client === NA || !meta.client ? code : meta.client,
       kind: meta.kind,
       priority: meta.priority,
       targetHours: meta.targetHours,
