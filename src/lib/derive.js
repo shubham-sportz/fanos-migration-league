@@ -289,9 +289,12 @@ export function deriveProject(project) {
     status = project.statusOverride;
   }
 
+  // A delivered website counts as won (no deadline comparison needed).
+  if (status === 'delivered' && project.kind === 'Web') status = 'won';
+
   const meta = STATUS_META[status];
   let statusLabel = meta.label;
-  if (status === 'won') statusLabel = `Won · ${deliveryVarianceLabel}`;
+  if (status === 'won') statusLabel = hasActualEnd ? `Won · ${deliveryVarianceLabel}` : 'Won';
   else if (status === 'late') statusLabel = `Late by ${deliveryVarianceDays}d`;
 
   const milestones = taskProgress.hasTasks ? computeMilestonesFromTasks(project.taskList) : computeMilestones(progressPct);
@@ -484,4 +487,11 @@ export function buildTaskProgressTrend(project) {
 
 export function deriveAll(projects) {
   return projects.map(deriveProject);
+}
+
+// In progress = anywhere between 1% and 99% complete, whatever its schedule
+// status badge says (on track / at risk / critical / ...). Delivered projects
+// (won / late / delivered) are never counted here.
+export function isInProgress(p) {
+  return typeof p.progressPct === 'number' && p.progressPct >= 1 && p.progressPct <= 99 && !['won', 'late', 'delivered'].includes(p.status);
 }

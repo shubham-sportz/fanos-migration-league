@@ -1,5 +1,6 @@
 import React from 'react';
 import { isNA, round1 } from '../lib/theme.js';
+import { isInProgress } from '../lib/derive.js';
 import { KpiCard } from '../components/Shared.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import InningsSplit from '../components/InningsSplit.jsx';
@@ -43,7 +44,7 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
       <section className="kpi-grid">
         <KpiCard label="PROJECTS IN PLAY" value={projects.length} sub="tracked in the timesheet" dot="#2A2AEA" />
         <KpiCard label="WON" value={portfolio.count('won')} sub="delivered on or before the deadline" dot="#2A2AEA" />
-        <KpiCard label="IN PROGRESS" value={portfolio.count('inprogress')} sub="actively being worked on" dot="#2A2AEA" />
+        <KpiCard label="IN PROGRESS" value={projects.filter(isInProgress).length} sub="actively being worked on" dot="#2A2AEA" />
         <KpiCard label="UPCOMING" value={portfolio.count('upcoming')} sub="not yet started" dot="#B45309" />
         <KpiCard
           label="EXPECTED vs ACTUAL"

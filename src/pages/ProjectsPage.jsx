@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ProjectCard from '../components/ProjectCard.jsx';
+import { isInProgress } from '../lib/derive.js';
 
 const FILTERS = ['All matches', 'Won', 'Late', 'In progress', 'Critical', 'At risk', 'Blocked', 'On track', 'Upcoming', 'Data pending'];
 const FILTER_KEY = {
@@ -18,7 +19,8 @@ const FILTER_KEY = {
 export default function ProjectsPage({ projects, onOpen }) {
   const [filter, setFilter] = useState('All matches');
   const key = FILTER_KEY[filter];
-  const visible = key ? projects.filter((p) => p.status === key) : projects;
+  const matches = (p, k) => (k === 'inprogress' ? isInProgress(p) : p.status === k);
+  const visible = key ? projects.filter((p) => matches(p, key)) : projects;
 
   return (
     <div>
@@ -30,7 +32,7 @@ export default function ProjectsPage({ projects, onOpen }) {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
         {FILTERS.map((f) => {
           const k = FILTER_KEY[f];
-          const count = k ? projects.filter((p) => p.status === k).length : projects.length;
+          const count = k ? projects.filter((p) => matches(p, k)).length : projects.length;
           return (
             <div key={f} className={`filter-pill${filter === f ? ' active' : ''}`} onClick={() => setFilter(f)}>
               <span>{f}</span>

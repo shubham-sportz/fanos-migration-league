@@ -2,23 +2,26 @@ import React from 'react';
 import { isNA, round1 } from '../lib/theme.js';
 
 const TEAM_STYLE = {
-  'Dev Team': { accent: '#2A2AEA', track: '#EFEFFF' },
+  'Web Dev': { accent: '#2A2AEA', track: '#EFEFFF' },
+  'App Dev': { accent: '#F97316', track: '#FFF1E7' },
   'Support Staff': { accent: '#7C3AED', track: '#F3EEFF' },
 };
-const GROUP_ORDER = { 'Dev Team': 0, 'Support Staff': 1 };
+const GROUP_ORDER = { 'Web Dev': 0, 'App Dev': 1, 'Support Staff': 2 };
 
 // Designers, testers, and delivery folks are grouped as Support Staff;
-// everyone else is the one Dev Team (Home and Away were merged into a single
-// team — the Team column in the Developers sheet is no longer used here).
+// iOS / Android developers are App Dev; everyone else is Web Dev (Home and
+// Away were merged — the Team column in the Developers sheet is not used here).
+const APP_ROLES = new Set(['ios', 'android']);
 const SUPPORT_ROLES = new Set(['qa', 'design', 'delivery']);
 function resolveGroup(m) {
   if (!isNA(m.role) && SUPPORT_ROLES.has(m.role.toLowerCase())) return 'Support Staff';
-  return 'Dev Team';
+  if (!isNA(m.role) && APP_ROLES.has(m.role.toLowerCase())) return 'App Dev';
+  return 'Web Dev';
 }
 
 /**
- * Groups a squad (array of { name, team, role, loggedHours }) into Dev Team /
- * Support Staff. Works for a single project's squad or a
+ * Groups a squad (array of { name, team, role, loggedHours }) into Web Dev /
+ * App Dev / Support Staff. Works for a single project's squad or a
  * pre-merged, cross-project aggregate (see DashboardPage, which sums each
  * developer's hours across every project before passing the list in here).
  */
