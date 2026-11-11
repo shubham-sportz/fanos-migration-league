@@ -85,23 +85,22 @@ export function Avatar({ text, round = false, color }) {
   );
 }
 
-// Total logged hours broken down by where they went — Home/Away squad hours
+// Total logged hours broken down by where they went — Dev Team squad hours
 // (from the project's per-developer timesheet split) plus Design/QA/Delivery
 // specialist hours (Actual_* columns in the Projects sheet). Rendered as a
 // donut (mirrors the Effort Breakdown ring on the detail page) rather than
 // bars, since this is a part-of-whole breakdown, not a planned-vs-actual pace.
 const TOTAL_HOURS_SEGMENTS = [
-  ['home', 'Home', '#2A2AEA'],
-  ['away', 'Away', '#F97316'],
+  ['dev', 'Dev Team', '#2A2AEA'],
   ['design', 'Design', '#7C3AED'],
   ['qa', 'QA', '#14B8A6'],
   ['delivery', 'Delivery', '#15803D'],
 ];
 
 // A squad member's individual discipline (e.g. QA, Design) takes priority
-// over their Home/Away team bucket — someone testing full-time shouldn't
+// over the generic Dev Team bucket — someone testing full-time shouldn't
 // have their hours read as generic build/run work just because they're on
-// the Home team roster.
+// the dev roster.
 const ROLE_TO_BUCKET = { qa: 'qa', design: 'design', delivery: 'delivery' };
 
 export function TotalHoursDonut({ squad, actualEffortSplit, compact = false, size, hole, bordered = true }) {
@@ -109,13 +108,11 @@ export function TotalHoursDonut({ squad, actualEffortSplit, compact = false, siz
     (acc, m) => {
       const roleBucket = !isNA(m.role) && ROLE_TO_BUCKET[m.role.toLowerCase()];
       if (roleBucket) acc[roleBucket] += m.loggedHours;
-      else if (m.team === 'Home') acc.home += m.loggedHours;
-      else if (m.team === 'Away') acc.away += m.loggedHours;
+      else acc.dev += m.loggedHours;
       return acc;
     },
     {
-      home: 0,
-      away: 0,
+      dev: 0,
       design: isNA(actualEffortSplit?.design) ? 0 : actualEffortSplit.design,
       qa: isNA(actualEffortSplit?.qa) ? 0 : actualEffortSplit.qa,
       delivery: isNA(actualEffortSplit?.delivery) ? 0 : actualEffortSplit.delivery,

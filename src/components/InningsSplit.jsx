@@ -2,26 +2,23 @@ import React from 'react';
 import { isNA, round1 } from '../lib/theme.js';
 
 const TEAM_STYLE = {
-  'Home': { accent: '#2A2AEA', track: '#EFEFFF' },
-  'Away': { accent: '#F97316', track: '#FFF1E7' },
+  'Dev Team': { accent: '#2A2AEA', track: '#EFEFFF' },
   'Support Staff': { accent: '#7C3AED', track: '#F3EEFF' },
 };
-const GROUP_ORDER = { Home: 0, Away: 1, 'Support Staff': 2 };
+const GROUP_ORDER = { 'Dev Team': 0, 'Support Staff': 1 };
 
-// Designers, testers, and delivery folks are grouped as Support Staff
-// regardless of their Home/Away team — that split is Run Team vs Build
-// Team, a separate axis from discipline (see TotalHoursDonut for the same
-// role-first rule applied to the hours-by-discipline donut).
+// Designers, testers, and delivery folks are grouped as Support Staff;
+// everyone else is the one Dev Team (Home and Away were merged into a single
+// team — the Team column in the Developers sheet is no longer used here).
 const SUPPORT_ROLES = new Set(['qa', 'design', 'delivery']);
 function resolveGroup(m) {
   if (!isNA(m.role) && SUPPORT_ROLES.has(m.role.toLowerCase())) return 'Support Staff';
-  if (!isNA(m.team)) return m.team;
-  return null;
+  return 'Dev Team';
 }
 
 /**
- * Groups a squad (array of { name, team, role, loggedHours }) into Home /
- * Away / Support Staff. Works for a single project's squad or a
+ * Groups a squad (array of { name, team, role, loggedHours }) into Dev Team /
+ * Support Staff. Works for a single project's squad or a
  * pre-merged, cross-project aggregate (see DashboardPage, which sums each
  * developer's hours across every project before passing the list in here).
  */
@@ -42,7 +39,7 @@ function groupByTeam(squad) {
     });
 }
 
-export default function InningsSplit({ squad, title = '🏏 Innings Split', subtitle = 'Runs logged by each developer, grouped by assigned team' }) {
+export default function InningsSplit({ squad, title = '🏏 Innings Split', subtitle = 'Runs logged by each developer, grouped by team' }) {
   const hasTeams = squad.length > 0 && squad.every((m) => resolveGroup(m) !== null);
   const totalLogged = round1(squad.reduce((s, m) => s + m.loggedHours, 0)) || 1;
 
@@ -52,7 +49,7 @@ export default function InningsSplit({ squad, title = '🏏 Innings Split', subt
         <div>
           <div style={{ fontSize: 15, fontWeight: 800 }}>{title}</div>
           <div style={{ fontSize: 12, color: '#6B7280', fontWeight: 500, marginTop: 3 }}>
-            {hasTeams ? subtitle : 'NA — needs a team assignment per developer'}
+            {hasTeams ? subtitle : 'NA — no developers logged yet'}
           </div>
         </div>
         <div className="num" style={{ fontSize: 26, fontWeight: 700 }}>
@@ -60,7 +57,7 @@ export default function InningsSplit({ squad, title = '🏏 Innings Split', subt
         </div>
       </div>
       {!hasTeams ? (
-        <div className="na" style={{ padding: 22 }}>NA — assign each developer to a team (Home / Away) to enable this split</div>
+        <div className="na" style={{ padding: 22 }}>NA — no developers logged yet</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(420px, 100%), 1fr))', gap: 16, padding: '18px 22px' }}>
           {groupByTeam(squad).map((t) => {

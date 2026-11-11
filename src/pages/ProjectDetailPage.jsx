@@ -191,7 +191,7 @@ function TotalLoggedCard({ squad, actualEffortSplit }) {
     <div className="card" style={{ padding: '20px 22px' }}>
       <div style={{ fontSize: 13.5, fontWeight: 800 }}>Total Logged Hours</div>
       <div style={{ fontSize: 11.5, color: '#6B7280', fontWeight: 500, marginTop: 3 }}>
-        Home + Away squad runs, plus Design/QA/Delivery — compare against the planned split on the left
+        Dev Team squad runs, plus Design/QA/Delivery — compare against the planned split on the left
       </div>
       <div style={{ marginTop: 18 }}>
         <TotalHoursDonut squad={squad} actualEffortSplit={actualEffortSplit} size={DONUT_SIZE} hole={DONUT_HOLE} bordered={false} />
@@ -295,7 +295,7 @@ export default function ProjectDetailPage({ project, onBack }) {
                 <div className="scorecard-score">
                   <NAValue value={p.totalLoggedHours} /> <span style={{ fontSize: 22, opacity: 0.7, letterSpacing: 1 }}>RUNS</span>
                 </div>
-                <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>TOTAL LOGGED · HOME+AWAY+DESIGN+QA+DELIVERY</div>
+                <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.6, letterSpacing: 0.6 }}>TOTAL LOGGED · DEV TEAM+DESIGN+QA+DELIVERY</div>
               </div>
               <div>
                 <div className="scorecard-score" style={{ opacity: 0.55 }}>

@@ -8,7 +8,7 @@ import stadium from '../assets/stadium-sketch.avif';
 
 export default function DashboardPage({ projects, portfolio, onOpen }) {
   // Each developer's hours logged, summed across every project, so the
-  // aggregate Home vs Away split reflects the whole portfolio
+  // aggregate team split reflects the whole portfolio
   // rather than just one match.
   const aggregatedSquad = Object.values(
     projects.reduce((byName, p) => {
@@ -56,16 +56,6 @@ export default function DashboardPage({ projects, portfolio, onOpen }) {
 
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 16, marginTop: 16, padding: '10px 18px', borderRadius: 12, background: 'linear-gradient(90deg, #F5F5FF 0%, #FFF6EF 100%)', border: '1px solid #E8E8F2', flexWrap: 'wrap' }}>
         <span style={{ fontSize: 13 }}>ℹ️</span>
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
-          <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#2A2AEA', flex: '0 0 9px' }} />
-          <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>Home</strong> = Run Team
-        </span>
-        <span style={{ width: 1, height: 14, background: '#E0E0EC' }} />
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
-          <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#F97316', flex: '0 0 9px' }} />
-          <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>Away</strong> = Build Team
-        </span>
-        <span style={{ width: 1, height: 14, background: '#E0E0EC' }} />
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, fontWeight: 600, color: '#6B7280' }}>
           <span style={{ fontSize: 11 }}>🏏</span>
           <strong style={{ color: '#1E1E2D', fontWeight: 800 }}>1 Runs</strong> = 1 Hours

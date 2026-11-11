@@ -142,6 +142,14 @@ explicitly request (a new task row, a new developer):
   in `Developers` yet gets added (Claude will ask which team, Home or Away
   — the Innings Split needs every squad member's team resolved to render).
 
+**DC is split into two cards**, `DCW` (website, `[Web]` tickets) and `DCA`
+(app, iOS + Android tickets), both read from the single `DC` task sheet
+(`SPLITS` in `scripts/generate-data.mjs`). When building the Jira payload,
+key DC hours under `DCW` / `DCA` (by each ticket's `[Web]` tag), not `DC`.
+
+Home/Away is no longer a split: everyone except QA/Design/Delivery roles
+is one "Dev Team". A project with `StatusOverride = delivered` shows 100%.
+
 Under the hood this is one script — `pnpm sync-dashboard <payload.json>`
 (`scripts/sync-dashboard.mjs`), given a JSON payload with `statuses`,
 `hours`, `newTasks`, and `newDevelopers` sections (any can be omitted) —

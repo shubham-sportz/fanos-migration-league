@@ -176,6 +176,10 @@ export function deriveProject(project) {
   // every task being done, or finish every task using more or fewer hours
   // than budgeted. Hours stay tracked separately below as a budget metric.
   const taskProgress = computeTaskProgress(project.taskList);
+  // A project manually marked `delivered` (Projects sheet StatusOverride) is
+  // complete by definition, even if some tickets sit in Jira states such as
+  // "Rejected" or "Ready for Prod" that carry a partial weight.
+  if (project.statusOverride === 'delivered' && taskProgress.hasTasks) taskProgress.pct = 100;
   const progressPct = taskProgress.hasTasks ? taskProgress.pct : hoursProgressPct;
 
   const daysLeft = hasEnd ? Math.max(0, dayDiff(TODAY_ISO, project.endDate)) : NA;

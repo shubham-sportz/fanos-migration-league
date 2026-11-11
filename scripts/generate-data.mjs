@@ -101,6 +101,28 @@ sheet('Projects').forEach((r) => {
   };
 });
 
+// --- Project splits ---
+// One Jira/sheet project can be shown as several cards. DC's tickets cover
+// both the website and the apps, so its single "DC" sheet is split by the
+// platform tag in each task name into DCW (Website) and DCA (App =
+// iOS + Android). The "DC" project itself is replaced by the two. Hours go
+// in HoursOverride under the split codes (DCW / DCA) directly.
+const SPLITS = {
+  DC: {
+    DCW: { client: 'DC Website', kind: 'Web', match: (r) => /\[Web\]/i.test(String(r.TaskName)) },
+    DCA: { client: 'DC App', kind: 'App', match: (r) => !/\[Web\]/i.test(String(r.TaskName)) },
+  },
+};
+const splitSource = {}; // split code -> { sheet, match }
+Object.entries(SPLITS).forEach(([source, parts]) => {
+  if (!projects[source]) return;
+  Object.entries(parts).forEach(([code, { client, kind, match }]) => {
+    projects[code] = { ...structuredClone(projects[source]), client, kind };
+    splitSource[code] = { sheet: source, match };
+  });
+  delete projects[source];
+});
+
 // --- HoursOverride ---
 // `Source` distinguishes hours pulled from a Jira worklog sync ("Jira")
 // from hours typed in by hand for work that was never logged against a
@@ -142,7 +164,10 @@ Object.keys(projects).forEach((code) => {
   // nobody has picked up yet are real tasks (they affect % complete) even
   // though they have no developer to credit in the squad.
   const hasDev = (r) => r.Developer && r.Developer !== 'NA';
-  const rows = sheet(code).filter((r) => hasDev(r) || (r.TaskName && r.TaskName !== 'NA'));
+  const src = splitSource[code];
+  const rows = sheet(src ? src.sheet : code)
+    .filter((r) => hasDev(r) || (r.TaskName && r.TaskName !== 'NA'))
+    .filter((r) => !src || src.match(r));
 
   const taskList = [];
   const seen = new Set();
