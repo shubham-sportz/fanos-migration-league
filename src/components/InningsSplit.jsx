@@ -11,8 +11,8 @@ const GROUP_ORDER = { 'Web Dev': 0, 'App Dev': 1, 'Support Staff': 2 };
 // Designers, testers, and delivery folks are grouped as Support Staff;
 // iOS / Android developers are App Dev; everyone else is Web Dev (Home and
 // Away were merged — the Team column in the Developers sheet is not used here).
-const APP_ROLES = new Set(['ios', 'android']);
-const SUPPORT_ROLES = new Set(['qa', 'design', 'delivery']);
+const APP_ROLES = new Set(['ios', 'android', 'app']);
+const SUPPORT_ROLES = new Set(['qa', 'design', 'delivery', 'support']);
 function resolveGroup(m) {
   if (!isNA(m.role) && SUPPORT_ROLES.has(m.role.toLowerCase())) return 'Support Staff';
   if (!isNA(m.role) && APP_ROLES.has(m.role.toLowerCase())) return 'App Dev';

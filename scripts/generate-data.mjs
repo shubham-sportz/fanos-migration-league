@@ -62,8 +62,12 @@ function dateOrNA(v) {
 const CAPACITY_HOURS_PER_DAY = 8;
 
 // --- Developers ---
+// People removed from the dashboard entirely: dropped from the roster, squads
+// and hours, even if the sheet / a Jira sync still carries rows for them.
+const EXCLUDED_DEVELOPERS = new Set(['Mohd Aman Qureshi', 'Jigar Patel', 'Juturu Charan Sai', 'Shreyash Patil']);
 const developers = {};
 sheet('Developers').forEach((r) => {
+  if (EXCLUDED_DEVELOPERS.has(r.Name)) return;
   developers[r.Name] = { team: orNA(r.Team), role: orNA(r.Role) };
 });
 
@@ -128,7 +132,7 @@ Object.entries(SPLITS).forEach(([source, parts]) => {
 // from hours typed in by hand for work that was never logged against a
 // ticket ("Manual"); NA on older rows from before this column existed.
 sheet('HoursOverride').forEach((r) => {
-  if (!projects[r.ProjectCode]) return;
+  if (!projects[r.ProjectCode] || EXCLUDED_DEVELOPERS.has(r.Developer)) return;
   projects[r.ProjectCode].actualHoursByDeveloper[r.Developer] = r.Hours;
   projects[r.ProjectCode].hoursSource[r.Developer] = orNA(r.Source);
 });
@@ -163,7 +167,7 @@ Object.keys(projects).forEach((code) => {
   // A row counts if it has a developer OR a task name — Jira stories that
   // nobody has picked up yet are real tasks (they affect % complete) even
   // though they have no developer to credit in the squad.
-  const hasDev = (r) => r.Developer && r.Developer !== 'NA';
+  const hasDev = (r) => r.Developer && r.Developer !== 'NA' && !EXCLUDED_DEVELOPERS.has(r.Developer);
   const src = splitSource[code];
   const rows = sheet(src ? src.sheet : code)
     .filter((r) => hasDev(r) || (r.TaskName && r.TaskName !== 'NA'))
